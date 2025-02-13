@@ -1,0 +1,36 @@
+syntax = 'proto3';
+package afb;
+
+option go_package="github.com/habiliai/habiliai/api/pkg/habapi";
+
+import "google/protobuf/empty.proto";
+
+service HabiliApi {
+  rpc CreateThread(google.protobuf.Empty) returns (ThreadId);
+  rpc DeleteThread(ThreadId) returns (google.protobuf.Empty);
+  rpc GetAssistants(GetAssistantsRequest) returns (GetAssistantsResponse);
+
+  rpc AddMessage(AddMessageRequest) returns (google.protobuf.Empty);
+}
+
+message Assistant {
+  string name = 1;
+  string icon_url = 2;
+}
+
+message GetAssistantsResponse {
+  repeated string assistants = 1;
+}
+
+message GetAssistantsRequest {
+  string thread_id = 1;
+}
+
+message AddMessageRequest {
+  string thread_id = 1;
+  string message = 2;
+}
+
+message ThreadId {
+  string id = 1;
+}

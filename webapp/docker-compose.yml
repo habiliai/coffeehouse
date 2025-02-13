@@ -1,0 +1,36 @@
+# docker-compose.yml
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: habiliai
+      POSTGRES_USER: habiliai
+      POSTGRES_PASSWORD: habiliai
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    configs:
+      - source: init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+configs:
+  init.sql:
+    content: |
+      CREATE DATABASE test WITH OWNER = habiliai;
+
+volumes:
+  minio_data:
