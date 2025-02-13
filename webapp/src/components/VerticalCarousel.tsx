@@ -5,7 +5,7 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-} from '@components/ui/carousel';
+} from '@/components/ui/carousel';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
