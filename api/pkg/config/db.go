@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/habiliai/habiliai/api/pkg/constants"
+)
 
 type (
 	DBConfig struct {
@@ -20,6 +23,6 @@ type (
 func (c DBConfig) GetURI() string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=disable&search_path=%s",
-		c.User, c.Password, c.Host, c.Port, c.Name, "habili_api",
+		c.User, c.Password, c.Host, c.Port, c.Name, constants.SchemaName,
 	)
 }

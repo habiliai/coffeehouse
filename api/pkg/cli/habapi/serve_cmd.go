@@ -6,8 +6,8 @@ import (
 	habgrpc "github.com/habiliai/habiliai/api/pkg/grpc"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/pkg/errors"
+	"github.com/rs/cors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"net"
@@ -20,18 +20,8 @@ func (c *cli) newServeCmd() *cobra.Command {
 		Short: "Start the server",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx := cmd.Context()
-			viper.AddConfigPath(".")
-			viper.SetConfigName(".env")
-			viper.SetConfigType("env")
-
-			//viper.AutomaticEnv()
-
-			if err := viper.ReadInConfig(); err != nil {
-				return errors.Wrapf(err, "failed to read in config")
-			}
-
-			if err := viper.Unmarshal(&c.cfg); err != nil {
-				return errors.Wrapf(err, "failed to unmarshal config")
+			if err := c.ReadInConfig(); err != nil {
+				return err
 			}
 
 			logger.Debug("start server", "config", c.cfg)
@@ -64,7 +54,29 @@ func (c *cli) newServeCmd() *cobra.Command {
 				return true
 			}))
 
-			httpServer := http.Server{Handler: grpcWebServer}
+			cors := func() *cors.Cors {
+				if c.cfg.IncludeDebug {
+					return cors.AllowAll()
+				} else {
+					return cors.New(cors.Options{
+						AllowedOrigins: []string{
+							"https://habili.ai",
+						},
+						AllowedMethods: []string{
+							http.MethodHead,
+							http.MethodGet,
+							http.MethodPost,
+							http.MethodPut,
+							http.MethodPatch,
+							http.MethodDelete,
+						},
+						AllowedHeaders:   []string{"*"},
+						AllowCredentials: false,
+					})
+				}
+			}()
+
+			httpServer := http.Server{Handler: cors.Handler(grpcWebServer)}
 			defer httpServer.Close()
 			go func() {
 				<-ctx.Done()

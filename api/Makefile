@@ -58,3 +58,9 @@ clean:
 	rm -rf $(PROTOC_DIR)
 	rm -f $(PROTOC)
 	@echo "cleared"
+
+bin/habapi: pb
+	CGO_ENABLED=0 go build -o bin/habapi ./cmd/habapi/main.go
+
+.PHONY: all
+all: bin/habapi

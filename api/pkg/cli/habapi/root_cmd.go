@@ -10,6 +10,7 @@ func (c *cli) newRootCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		c.newServeCmd(),
+		c.newSeedCmd(),
 	)
 
 	return cmd

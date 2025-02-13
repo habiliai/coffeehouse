@@ -2,15 +2,16 @@ package domain
 
 import (
 	"github.com/pkg/errors"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type Mission struct {
 	gorm.Model
 
-	Name         string
-	AssistantIds datatypes.JSONSlice[string]
+	Name string
+
+	Agents []Agent `gorm:"many2many:missions_agents;"`
+	Tasks  []Task  `gorm:"foreignKey:MissionID"`
 }
 
 func (m *Mission) Save(db *gorm.DB) error {
