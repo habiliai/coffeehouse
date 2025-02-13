@@ -5,6 +5,7 @@ import (
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
 	"github.com/pkg/errors"
+	"gorm.io/gorm/clause"
 )
 
 func (s *server) GetMissions(ctx context.Context, req *GetMissionsRequest) (*GetMissionsResponse, error) {
@@ -17,7 +18,7 @@ func (s *server) GetMissions(ctx context.Context, req *GetMissionsRequest) (*Get
 	}
 
 	var missions []domain.Mission
-	if err := stmt.Order("id ASC").Find(&missions).Error; err != nil {
+	if err := stmt.Preload(clause.Associations).Order("id ASC").Find(&missions).Error; err != nil {
 		return nil, errors.Wrap(err, "failed to find missions")
 	}
 

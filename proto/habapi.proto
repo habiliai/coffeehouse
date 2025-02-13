@@ -56,6 +56,7 @@ message GetMissionsResponse {
 message Mission {
   int32 id = 1;
   string name = 2;
+  repeated Agent agents = 3;
 }
 
 message CreateThreadRequest {
