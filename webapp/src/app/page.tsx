@@ -2,14 +2,29 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, LayoutGroup } from 'framer-motion';
-import { Agent, Mission, useGetAgents, useGetMissions } from './actions';
+import {
+  Agent,
+  Mission,
+  useCreateThread,
+  useGetAgents,
+  useGetMissions,
+} from './actions';
 import AgentProfile from '@/components/AgentProfile';
 import { VerticalCarousel } from '@/components/VerticalCarousel';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 const DEFAULT_AGENT_SLOT = Array(3).fill(null);
 export default function Home() {
+  const router = useRouter();
   const { data: missions } = useGetMissions();
   const { data: agents } = useGetAgents();
+
+  const { mutate: createThread } = useCreateThread({
+    onSuccess: (threadId: string) => {
+      router.push(`/workflow?thread_id=${threadId}`);
+    },
+  });
 
   const [selectedMission, setSelectedMission] = useState<Mission>();
   const [agentSlots, setAgentSlots] =
@@ -21,7 +36,7 @@ export default function Home() {
       if (!mission) return;
 
       setSelectedMission(mission);
-      setAgentSlots(Array(mission.agentPreset.length).fill(null));
+      setAgentSlots(Array(mission.agentsList.length).fill(null));
     },
     [missions],
   );
@@ -29,16 +44,21 @@ export default function Home() {
   const handleAgentSlotChange = useCallback(() => {
     if (!selectedMission || !agents) return;
 
-    const matchedAgents = selectedMission.agentPreset.map(
-      (id) => agents.find((a) => a.id === id) ?? null,
+    const matchedAgents = selectedMission.agentsList.map(
+      (requiredAgent) =>
+        agents.find((agent) => agent.id === requiredAgent.id) ?? null,
     );
     setAgentSlots(matchedAgents ?? DEFAULT_AGENT_SLOT);
   }, [agents, selectedMission]);
 
+  const handleCreateThread = useCallback(() => {
+    createThread();
+  }, [createThread]);
+
   const unassignedAgents = useMemo(() => {
     const assignedAgentIds = agentSlots
       .filter((slot) => slot !== null)
-      .map((slot) => (slot as Agent).id);
+      .map((slot) => slot.id);
 
     return agents?.filter((agent) => !assignedAgentIds.includes(agent.id));
   }, [agents, agentSlots]);
@@ -70,7 +90,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="flex gap-x-4">
+        <div className="flex items-end gap-x-4">
           {agentSlots.map((agent, index) => (
             <div
               key={`agent-slot-${index}`}
@@ -78,19 +98,30 @@ export default function Home() {
             >
               {agent && (
                 <motion.div layoutId={`agent-${agent.id}`}>
-                  <AgentProfile name={agent.name} imageUrl={agent.iconUrl}>
+                  <AgentProfile
+                    className="w-32"
+                    imageClassName="size-16"
+                    name={agent.name}
+                    imageUrl={agent.iconUrl}
+                  >
                     <AgentProfile.Label>{agent.name}</AgentProfile.Label>
                   </AgentProfile>
                 </motion.div>
               )}
             </div>
           ))}
+          <Button onClick={handleCreateThread}>Mission Start</Button>
         </div>
 
         <div className="flex flex-wrap gap-4">
           {unassignedAgents?.map((agent) => (
             <motion.div key={agent.id} layoutId={`agent-${agent.id}`}>
-              <AgentProfile name={agent.name} imageUrl={agent.iconUrl}>
+              <AgentProfile
+                className="w-32"
+                imageClassName="size-16"
+                name={agent.name}
+                imageUrl={agent.iconUrl}
+              >
                 <AgentProfile.Label>{agent.name}</AgentProfile.Label>
               </AgentProfile>
             </motion.div>

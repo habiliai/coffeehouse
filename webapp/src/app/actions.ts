@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export type Agent = {
   id: number;
@@ -18,14 +18,36 @@ const SAMPLE_AGENTS: Agent[] = [
 export type Mission = {
   id: number;
   name: string;
-  agentPreset: number[];
+  agentsList: Agent[];
 };
 
 const SAMPLE_MISSIONS: Mission[] = [
-  { id: 1, name: 'Mission 1', agentPreset: [1, 3, 5] },
-  { id: 2, name: 'Mission 2', agentPreset: [2, 4] },
-  { id: 3, name: 'Mission 3', agentPreset: [2, 1, 4, 5, 6] },
-  { id: 4, name: 'Mission 4', agentPreset: [3, 5, 6] },
+  {
+    id: 1,
+    name: 'Mission 1',
+    agentsList: [SAMPLE_AGENTS[0], SAMPLE_AGENTS[2], SAMPLE_AGENTS[4]],
+  },
+  {
+    id: 2,
+    name: 'Mission 2',
+    agentsList: [SAMPLE_AGENTS[1], SAMPLE_AGENTS[3]],
+  },
+  {
+    id: 3,
+    name: 'Mission 3',
+    agentsList: [
+      SAMPLE_AGENTS[1],
+      SAMPLE_AGENTS[0],
+      SAMPLE_AGENTS[3],
+      SAMPLE_AGENTS[4],
+      SAMPLE_AGENTS[5],
+    ],
+  },
+  {
+    id: 4,
+    name: 'Mission 4',
+    agentsList: [SAMPLE_AGENTS[2], SAMPLE_AGENTS[4], SAMPLE_AGENTS[5]],
+  },
 ];
 
 export function useGetMissions() {
@@ -34,7 +56,7 @@ export function useGetMissions() {
     queryFn: () => {
       try {
         // TODO: Fetch missions from the server
-        const missions: Mission[] = SAMPLE_MISSIONS;
+        const missions = SAMPLE_MISSIONS;
         return missions;
       } catch (e) {
         console.error(e);
@@ -50,12 +72,40 @@ export function useGetAgents() {
     queryFn: () => {
       try {
         // TODO: Fetch agents from the server
-        const agents: Agent[] = SAMPLE_AGENTS;
+        const agents = SAMPLE_AGENTS;
         return agents;
       } catch (e) {
         console.error(e);
         throw e;
       }
+    },
+  });
+}
+
+export function useCreateThread({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: (threadId: string) => void;
+  onError?: () => void;
+} = {}) {
+  return useMutation({
+    mutationKey: [''] as const,
+    async mutationFn() {
+      try {
+        // TODO: Implement thread creation logic
+        return '1234';
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+    },
+    onSuccess(threadId) {
+      onSuccess?.(threadId);
+    },
+    onError(error) {
+      console.error(error);
+      onError?.();
     },
   });
 }
