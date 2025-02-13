@@ -26,6 +26,29 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+  habapi:
+    build:
+      dockerfile: ./api/Dockerfile
+    command:
+      - sh
+      - -ce
+      - |
+        ./habapi seed --reset
+        ./habapi serve
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      includeDebug: true
+      db.user: habiliai
+      db.password: habiliai
+      db.name: habiliai
+      db.host: localhost
+      db.port: 5432
+      openai.apiKey: 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
+    depends_on:
+      - postgres
+    restart: always
 
 configs:
   init.sql:

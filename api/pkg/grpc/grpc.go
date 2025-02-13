@@ -1,7 +1,7 @@
-package afgrpc
+package habgrpc
 
-import aflog "github.com/habiliai/habiliai/api/pkg/log"
+import hablog "github.com/habiliai/habiliai/api/pkg/log"
 
 var (
-	logger = aflog.GetLogger()
+	logger = hablog.GetLogger()
 )

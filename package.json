@@ -9,7 +9,12 @@
   "workspaces": {
     "packages": [
       "webapp",
-      "api"
+      "api",
+      "web-app"
     ]
+  },
+  "scripts": {
+    "setup": "docker compose up --build -d",
+    "teardown": "docker compose down"
   }
 }

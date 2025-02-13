@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/habiliai/habiliai/api/pkg/constants"
 	"github.com/habiliai/habiliai/api/pkg/digo"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	aflog "github.com/habiliai/habiliai/api/pkg/log"
@@ -32,7 +33,7 @@ func init() {
 
 			return db, nil
 		case digo.EnvTest:
-			db, err := gorm.Open(postgres.Open("postgres://afuser:afuser@localhost:6543/test?search_path=agentfather"), &gorm.Config{})
+			db, err := gorm.Open(postgres.Open("postgres://habiliai:habiliai@localhost:5432/test?search_path="+constants.SchemaName), &gorm.Config{})
 			if err != nil {
 				return nil, err
 			}

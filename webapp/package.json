@@ -2,6 +2,8 @@
   "name": "@habiliai/webapp",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "sideEffects": false,
   "scripts": {
     "dev": "../node_modules/.bin/next dev",
     "build": "../node_modules/.bin/next build",

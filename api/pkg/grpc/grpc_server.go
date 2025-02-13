@@ -1,4 +1,4 @@
-package afgrpc
+package habgrpc
 
 import (
 	"context"
@@ -50,7 +50,7 @@ func handleErrorToGrpcStatus(err error) error {
 
 func createGrpcServer(
 	db *gorm.DB,
-	afbServer afb.AgentFatherBackendServer,
+	afbServer habapi.HabiliApiServer,
 ) (*grpc.Server, error) {
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(func(
@@ -99,7 +99,7 @@ func createGrpcServer(
 			return
 		}),
 	)
-	afb.RegisterAgentFatherBackendServer(grpcServer, afbServer)
+	habapi.RegisterHabiliApiServer(grpcServer, afbServer)
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 
@@ -113,7 +113,7 @@ func init() {
 			return nil, err
 		}
 
-		afbServer, err := digo.Get[afb.UnsafeAgentFatherBackendServer](ctx, afb.ServerKey)
+		afbServer, err := digo.Get[habapi.HabiliApiServer](ctx, habapi.ServerKey)
 		if err != nil {
 			return nil, err
 		}

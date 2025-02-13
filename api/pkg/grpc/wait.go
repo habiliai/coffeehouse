@@ -1,19 +1,18 @@
-package tclgrpctest
+package habgrpc
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"testing"
 	"time"
 )
 
 func WaitForServing(
-	t *testing.T,
 	ctx context.Context,
 	addr string,
-) {
+) error {
 	for interrupted := false; !interrupted; {
 		select {
 		case <-ctx.Done():
@@ -22,19 +21,21 @@ func WaitForServing(
 			// Perform gRPC health check
 			conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
-				t.Fatalf("failed to connect to gRPC server: %v", err)
+				return errors.Wrapf(err, "failed to connect to gRPC server")
 			}
 			defer conn.Close()
 
 			healthClient := grpc_health_v1.NewHealthClient(conn)
 			if resp, err := healthClient.Check(ctx, &grpc_health_v1.HealthCheckRequest{}); err != nil {
-				t.Fatalf("health check failed: %v", err)
+				return errors.Wrapf(err, "health check failed")
 			} else if resp.Status == grpc_health_v1.HealthCheckResponse_SERVING {
 				interrupted = true
 				break
 			} else {
-				t.Fatalf("gRPC server not in serving state: %v", resp.Status)
+				return errors.Errorf("gRPC server not in serving state: %v", resp.Status)
 			}
 		}
 	}
+
+	return nil
 }
