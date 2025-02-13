@@ -25,6 +25,7 @@ const SAMPLE_MISSIONS: Mission[] = [
   { id: 1, name: 'Mission 1', agentPreset: [1, 3, 5] },
   { id: 2, name: 'Mission 2', agentPreset: [2, 4] },
   { id: 3, name: 'Mission 3', agentPreset: [2, 1, 4, 5, 6] },
+  { id: 4, name: 'Mission 4', agentPreset: [3, 5, 6] },
 ];
 
 export function useGetMissions() {

@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, LayoutGroup } from 'framer-motion';
 import { Agent, Mission, useGetAgents, useGetMissions } from './actions';
 import AgentProfile from '@components/AgentProfile';
+import { VerticalCarousel } from '@components/VerticalCarousel';
 
 const DEFAULT_AGENT_SLOT = Array(3).fill(null);
 export default function Home() {
@@ -14,10 +15,16 @@ export default function Home() {
   const [agentSlots, setAgentSlots] =
     useState<(Agent | null)[]>(DEFAULT_AGENT_SLOT);
 
-  const handleMissionChange = useCallback(async (mission: Mission) => {
-    setSelectedMission(mission);
-    setAgentSlots(Array(mission.agentPreset.length).fill(null));
-  }, []);
+  const handleMissionChange = useCallback(
+    (missionId: number) => {
+      const mission = missions?.find((m) => m.id === missionId);
+      if (!mission) return;
+
+      setSelectedMission(mission);
+      setAgentSlots(Array(mission.agentPreset.length).fill(null));
+    },
+    [missions],
+  );
 
   const handleAgentSlotChange = useCallback(() => {
     if (!selectedMission || !agents) return;
@@ -49,24 +56,18 @@ export default function Home() {
       <div className="flex h-full w-full flex-col items-center justify-center gap-y-8 p-6">
         <h1 className="text-3xl font-bold">Agent Collaborative Network</h1>
 
-        {/* TODO : Implement Mission Carousel */}
-        <div className="flex flex-col items-center">
+        <div className="flex items-center gap-x-10">
           <h2 className="text-2xl font-bold">Missions</h2>
-          <div className="flex gap-4">
-            {missions?.map((mission) => (
-              <button
-                key={mission.id}
-                className={`${
-                  mission.id === selectedMission?.id
-                    ? 'bg-gray-800 text-white'
-                    : 'bg-gray-200'
-                } rounded-md px-4 py-2`}
-                onClick={() => handleMissionChange(mission)}
-              >
-                {mission.name}
-              </button>
-            ))}
-          </div>
+          <VerticalCarousel
+            items={
+              missions?.map((mission) => ({
+                value: mission.id.toString(),
+                name: mission.name,
+              })) ?? []
+            }
+            selectedValue={selectedMission?.id.toString()}
+            onClick={(value) => handleMissionChange(Number(value))}
+          />
         </div>
 
         <div className="flex gap-x-4">
@@ -85,7 +86,8 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="mt-8 flex flex-wrap gap-4">
+
+        <div className="flex flex-wrap gap-4">
           {unassignedAgents?.map((agent) => (
             <motion.div key={agent.id} layoutId={`agent-${agent.id}`}>
               <AgentProfile name={agent.name} imageUrl={agent.iconUrl}>
