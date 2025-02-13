@@ -11,7 +11,7 @@ type (
 	Container struct {
 		context.Context
 		Env    Env
-		Config *config.AfbConfig
+		Config *config.HabApiConfig
 
 		objects map[ObjectKey]any
 	}
@@ -29,7 +29,7 @@ var (
 func NewContainer(
 	ctx context.Context,
 	env Env,
-	cfg *config.AfbConfig,
+	cfg *config.HabApiConfig,
 ) *Container {
 	return &Container{
 		Context: ctx,

@@ -5,5 +5,8 @@ type HabApiConfig struct {
 	Port    int
 	WebPort int
 
-	DB DBConfig
+	DB     DBConfig
+	OpenAI struct {
+		ApiKey string
+	}
 }

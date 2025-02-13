@@ -1,7 +1,20 @@
 package habapi
 
-import "context"
+import (
+	"context"
+	"github.com/habiliai/habiliai/api/pkg/config"
+	hablog "github.com/habiliai/habiliai/api/pkg/log"
+)
+
+type cli struct {
+	cfg config.HabApiConfig
+}
+
+var (
+	logger = hablog.GetLogger()
+)
 
 func Execute(ctx context.Context) error {
-	return nil
+	cli := &cli{}
+	return cli.newRootCmd().ExecuteContext(ctx)
 }

@@ -1,4 +1,4 @@
-package aferrors
+package haberrors
 
 import "errors"
 

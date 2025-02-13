@@ -20,6 +20,6 @@ type (
 func (c DBConfig) GetURI() string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=disable&search_path=%s",
-		c.User, c.Password, c.Host, c.Port, c.Name, "afb",
+		c.User, c.Password, c.Host, c.Port, c.Name, "habili_api",
 	)
 }

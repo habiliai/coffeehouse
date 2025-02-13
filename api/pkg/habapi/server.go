@@ -1,14 +1,21 @@
 package habapi
 
-import "github.com/habiliai/habiliai/api/pkg/digo"
+import (
+	"github.com/habiliai/habiliai/api/pkg/digo"
+	hablog "github.com/habiliai/habiliai/api/pkg/log"
+	"github.com/openai/openai-go"
+)
 
 type server struct {
-	UnsafeAgentFatherBackendServer
+	UnsafeHabiliApiServer
+
+	openai *openai.Client
 }
 
 var (
-	ServerKey digo.ObjectKey           = "afb.server"
-	_         AgentFatherBackendServer = (*server)(nil)
+	ServerKey digo.ObjectKey  = "afb.server"
+	_         HabiliApiServer = (*server)(nil)
+	logger                    = hablog.GetLogger()
 )
 
 func init() {

@@ -6,24 +6,74 @@ option go_package="github.com/habiliai/habiliai/api/pkg/habapi";
 import "google/protobuf/empty.proto";
 
 service HabiliApi {
-  rpc CreateThread(google.protobuf.Empty) returns (ThreadId);
+  rpc GetMissions(GetMissionsRequest) returns (GetMissionsResponse);
+  rpc GetAgents(GetAgentsRequest) returns (GetAgentsResponse);
+
+  rpc CreateThread(CreateThreadRequest) returns (ThreadId);
   rpc DeleteThread(ThreadId) returns (google.protobuf.Empty);
-  rpc GetAssistants(GetAssistantsRequest) returns (GetAssistantsResponse);
+  rpc GetThread(ThreadId) returns (Thread);
+
 
   rpc AddMessage(AddMessageRequest) returns (google.protobuf.Empty);
 }
 
-message Assistant {
+message Thread {
+  string id = 1;
+  repeated Message messages = 2;
+}
+
+message AgentMessageContent {
+  string text = 1;
+  Agent agent = 2;
+}
+
+message UserMessageContent {
+  string text = 1;
+  repeated string mentions = 2;
+}
+
+message Message {
+  enum Role {
+    UNSPECIFIED = 0;
+    USER = 1;
+    ASSISTANT = 2;
+  }
+  string id = 1;
+  Role role = 2;
+  string text = 3;
+  optional Agent agent = 4;
+  repeated string mentions = 5;
+}
+
+message GetMissionsRequest {
+}
+
+message GetMissionsResponse {
+  repeated Mission missions = 1;
+  int32 num_total = 2;
+}
+
+message Mission {
+  int32 id = 1;
+  string name = 2;
+}
+
+message CreateThreadRequest {
+  int32 mission_id = 1;
+}
+
+message Agent {
   string name = 1;
   string icon_url = 2;
+  int32 id = 3;
 }
 
-message GetAssistantsResponse {
-  repeated string assistants = 1;
+message GetAgentsResponse {
+  repeated Agent agents = 1;
+  int32 num_total = 2;
 }
 
-message GetAssistantsRequest {
-  string thread_id = 1;
+message GetAgentsRequest {
 }
 
 message AddMessageRequest {

@@ -1,10 +1,10 @@
 SHELL := $(shell which sh)
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
-AF_PB_DIR := ./pkg/afb
-AF_PB_FILES := $(AF_PB_DIR)/af.pb.go
+AF_PB_DIR := ./pkg/habapi
+AF_PB_FILES := $(AF_PB_DIR)/habapi.pb.go
 PROTO_DIR := ../proto
-AF_PROTO_FILES := $(PROTO_DIR)/af.proto
+AF_PROTO_FILES := $(PROTO_DIR)/habapi.proto
 PROTOC_DIR := bin/protoc-$(GOOS)-$(GOARCH)
 PROTOC := bin/protoc
 

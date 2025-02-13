@@ -55,7 +55,7 @@ func Init(logLevel string, logHandler string) {
 }
 
 func init() {
-	logLevel := os.Getenv("AFB_LOG_LEVEL")
-	logHandler := os.Getenv("AFB_LOG_HANDLER")
+	logLevel := os.Getenv("HAB_LOG_LEVEL")
+	logHandler := os.Getenv("HAB_LOG_HANDLER")
 	Init(logLevel, logHandler)
 }
