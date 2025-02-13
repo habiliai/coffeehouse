@@ -1,9 +1,11 @@
 FROM golang:1.23.6-alpine AS build
 
+RUN apk add make git
+
 WORKDIR /app
 COPY . .
 RUN cd api &&\
-    CGO_ENABLED=0 go build -o bin/habapi ./cmd/habapi/main.go
+    make bin/habapi
 
 FROM golang:1.23.6-alpine
 
