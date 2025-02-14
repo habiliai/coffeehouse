@@ -15,10 +15,14 @@ export type CarouselItem = {
 };
 
 export function VerticalCarousel({
+  className,
+  itemClassName,
   items,
   selectedValue,
   onClick,
 }: {
+  className?: string;
+  itemClassName?: string;
   items: CarouselItem[];
   selectedValue?: string;
   onClick?: (value: string) => void;
@@ -44,33 +48,39 @@ export function VerticalCarousel({
   }, [carouselApi, selectedValue, items]);
 
   return (
-    <Carousel
-      setApi={setCarouselApi}
-      opts={{
-        align: 'start',
-        loop: true,
-      }}
-      orientation="vertical"
-      className="w-full max-w-xs"
-    >
-      <CarouselContent className="-mt-1 h-[200px]">
-        {items.map((item, index) => (
-          <CarouselItem
-            key={`carousel-item-${index}`}
-            className="basis-1/3 pt-1"
-            onClick={() => onClick?.(item.value)}
-          >
-            <div
-              className={classNames('flex h-full items-center p-1', {
-                'bg-gray-200': selectedValue === item.value,
-                'opacity-50': selectedValue !== item.value,
-              })}
+    <div className={className}>
+      <Carousel
+        setApi={setCarouselApi}
+        opts={{
+          align: 'start',
+          loop: true,
+        }}
+        orientation="vertical"
+        className="w-full"
+      >
+        <CarouselContent className="-mt-1 h-[200px]">
+          {items.map((item, index) => (
+            <CarouselItem
+              key={`carousel-item-${index}`}
+              className="basis-1/3 cursor-pointer pt-1"
+              onClick={() => onClick?.(item.value)}
             >
-              <span className="text-3xl font-semibold">{item.name}</span>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
+              <div
+                className={classNames(
+                  'flex h-full items-center p-1 text-3xl font-semibold',
+                  itemClassName,
+                  {
+                    'bg-gray-200': selectedValue === item.value,
+                    'opacity-50': selectedValue !== item.value,
+                  },
+                )}
+              >
+                <span className="line-clamp-1">{item.name}</span>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    </div>
   );
 }
