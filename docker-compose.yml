@@ -33,19 +33,28 @@ services:
       - sh
       - -ce
       - |
-        ./habapi seed --reset
+        env
         ./habapi serve
     ports:
       - "8000:8000"
       - "8001:8001"
     environment:
-      includeDebug: true
-      db.user: habiliai
-      db.password: habiliai
-      db.name: habiliai
-      db.host: localhost
-      db.port: 5432
-      openai.apiKey: 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
+      INCLUDE_DEBUG: true
+      PORT: 8000
+      WEB_PORT: 8001
+      DB_USER: habiliai
+      DB_PASSWORD: habiliai
+      DB_NAME: habiliai
+      DB_HOST: postgres.local
+      DB_PORT: 5432
+      DB_PING_TIMEOUT: 5s
+      DB_AUTO_MIGRATION: true
+      DB_MAX_IDLE_CONNS: 10
+      DB_MAX_OPEN_CONNS: 100
+      DB_CONN_MAX_LIFETIME: 1h
+      OPENAI_API_KEY: ""
+    links:
+      - postgres:postgres.local
     depends_on:
       - postgres
     restart: always

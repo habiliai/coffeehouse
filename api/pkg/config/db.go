@@ -7,16 +7,16 @@ import (
 
 type (
 	DBConfig struct {
-		PingTimeout     string
-		AutoMigration   bool
-		MaxIdleConns    int
-		MaxOpenConns    int
-		ConnMaxLifetime string
-		Host            string
-		Port            int
-		User            string
-		Name            string
-		Password        string
+		PingTimeout     string `env:"DB_PING_TIMEOUT"`
+		AutoMigration   bool   `env:"DB_AUTO_MIGRATION"`
+		MaxIdleConns    int    `env:"DB_MAX_IDLE_CONNS"`
+		MaxOpenConns    int    `env:"DB_MAX_OPEN_CONNS"`
+		ConnMaxLifetime string `env:"DB_CONN_MAX_LIFETIME"`
+		Host            string `env:"DB_HOST"`
+		Port            int    `env:"DB_PORT"`
+		User            string `env:"DB_USER"`
+		Name            string `env:"DB_NAME"`
+		Password        string `env:"DB_PASSWORD"`
 	}
 )
 
