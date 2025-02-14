@@ -1,15 +1,15 @@
 'use client';
 
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Noto_Sans, Noto_Sans_Mono } from 'next/font/google';
 import './globals.css';
 import dynamic from 'next/dynamic';
 
-const geistSans = Geist({
+const fonts = Noto_Sans({
   variable: '--font-geist-sans',
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
+const fontsMono = Noto_Sans_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
 });
@@ -35,7 +35,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} h-full w-full antialiased`}
+        className={`${fonts.variable} ${fontsMono.variable} h-full w-full antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
       </body>

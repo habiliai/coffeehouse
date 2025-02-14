@@ -5,10 +5,11 @@ import (
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm/clause"
 )
 
-func (s *server) GetMissions(ctx context.Context, req *GetMissionsRequest) (*GetMissionsResponse, error) {
+func (s *server) GetMissions(ctx context.Context, _ *emptypb.Empty) (*GetMissionsResponse, error) {
 	tx := helpers.GetTx(ctx)
 
 	stmt := tx.Model(&domain.Mission{})
