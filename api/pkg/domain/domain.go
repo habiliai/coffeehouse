@@ -3,8 +3,13 @@ package domain
 import (
 	"fmt"
 	"github.com/habiliai/habiliai/api/pkg/constants"
+	hablog "github.com/habiliai/habiliai/api/pkg/log"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+)
+
+var (
+	logger = hablog.GetLogger()
 )
 
 func AutoMigrate(db *gorm.DB) error {

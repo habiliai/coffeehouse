@@ -33,7 +33,7 @@ services:
       - sh
       - -ce
       - |
-        env
+        ./habapi seed
         ./habapi serve
     ports:
       - "8000:8000"
