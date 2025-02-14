@@ -50,13 +50,14 @@ func (s *server) DeleteThread(ctx context.Context, req *ThreadId) (*emptypb.Empt
 }
 
 func (s *server) GetThread(ctx context.Context, req *ThreadId) (*Thread, error) {
-	thread, err := s.openai.Beta.Threads.Get(ctx, req.Id)
+	thread, threadData, err := s.getThread(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	res := &Thread{
-		Id: thread.ID,
+		Id:        thread.ID,
+		MissionId: int32(threadData.GetMissionId()),
 	}
 
 	res.Messages, err = s.getAllMessages(ctx, req.Id)

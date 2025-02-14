@@ -16,7 +16,7 @@ func (s *server) GetAgents(ctx context.Context, _ *emptypb.Empty) (*GetAgentsRes
 	}
 
 	resp := &GetAgentsResponse{
-		Agents:   make([]*Agent, len(agents)),
+		Agents:   make([]*Agent, 0, len(agents)),
 		NumTotal: int32(len(agents)),
 	}
 	for _, agent := range agents {

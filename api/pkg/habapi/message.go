@@ -103,7 +103,10 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 			case openai.RunStatusCancelled:
 				return nil, errors.Wrapf(haberrors.ErrRuntime, "Run cancelled")
 			case openai.RunStatusRequiresAction:
-				return nil, errors.Wrapf(haberrors.ErrRuntime, "Run requires action")
+				run, err = s.requiresAction(ctx, run)
+				if err != nil {
+					return nil, err
+				}
 			default:
 				return nil, errors.Wrapf(haberrors.ErrBadRequest, "invalid thread run status: received %s", run.Status)
 			}

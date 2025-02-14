@@ -37,7 +37,11 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				}
 			}
 
-			return domain.SeedForTest(db)
+			if _, err := domain.SeedForTest(db); err != nil {
+				return err
+			}
+
+			return nil
 		},
 	}
 
