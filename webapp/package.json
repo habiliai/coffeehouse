@@ -5,10 +5,16 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "dev": "../node_modules/.bin/next dev",
-    "build": "../node_modules/.bin/next build",
-    "start": "../node_modules/.bin/next start",
-    "lint": "../node_modules/.bin/next lint"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate:proto:protoc": "mkdir -p src/proto/generated && grpc_tools_node_protoc -Isrc/proto --js_out=import_style=commonjs:src/proto/generated --grpc-web_out=import_style=typescript,mode=grpcwebtext:src/proto/generated src/proto/*.proto",
+    "generate:proto:post-script": "node ./scripts/post-generate-protos.mjs",
+    "generate:proto:format": "prettier --write src/proto",
+    "generate:proto": "run-s generate:proto:*",
+    "format": "prettier --write ./src",
+    "postinstall": "node ./scripts/download-protoc-gen-grpc-web.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -19,6 +25,8 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.4.2",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
     "lucide-react": "^0.475.0",
     "next": "15.1.7",
     "react": "^19.0.0",
@@ -36,9 +44,12 @@
     "eslint-config-next": "15.1.7",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
+    "grpc-tools": "^1.12.4",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8",
     "prettier": "^3.5.0",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "protoc-gen-js": "^3.21.4-4",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

@@ -6,8 +6,8 @@ option go_package="github.com/habiliai/habiliai/api/pkg/habapi";
 import "google/protobuf/empty.proto";
 
 service HabiliApi {
-  rpc GetMissions(GetMissionsRequest) returns (GetMissionsResponse);
-  rpc GetAgents(GetAgentsRequest) returns (GetAgentsResponse);
+  rpc GetMissions(google.protobuf.Empty) returns (GetMissionsResponse);
+  rpc GetAgents(google.protobuf.Empty) returns (GetAgentsResponse);
 
   rpc CreateThread(CreateThreadRequest) returns (ThreadId);
   rpc DeleteThread(ThreadId) returns (google.protobuf.Empty);
@@ -45,9 +45,6 @@ message Message {
   repeated string mentions = 5;
 }
 
-message GetMissionsRequest {
-}
-
 message GetMissionsResponse {
   repeated Mission missions = 1;
   int32 num_total = 2;
@@ -72,9 +69,6 @@ message Agent {
 message GetAgentsResponse {
   repeated Agent agents = 1;
   int32 num_total = 2;
-}
-
-message GetAgentsRequest {
 }
 
 message AddMessageRequest {
