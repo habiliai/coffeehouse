@@ -48,7 +48,7 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 	r.Agents = []*Agent{
 		{
 			Name:        "engineer",
-			AssistantId: "asst_JwxSg8eflu0qGI0ZQ3tKSaCi",
+			AssistantId: "asst_ADPQtt7Y2PSJunWTsjG7ZfDv",
 			IconUrl:     "https://img.logo.dev/github.com",
 			Missions: []Mission{
 				*r.Missions[0],
@@ -56,7 +56,7 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 		},
 		{
 			Name:        "designer",
-			AssistantId: "asst_JwxSg8eflu0qGI0ZQ3tKSaCi",
+			AssistantId: "asst_ADPQtt7Y2PSJunWTsjG7ZfDv",
 			IconUrl:     "https://img.logo.dev/facebook.com",
 			Missions: []Mission{
 				*r.Missions[0],
@@ -64,7 +64,7 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 		},
 		{
 			Name:        "manager",
-			AssistantId: "asst_JwxSg8eflu0qGI0ZQ3tKSaCi",
+			AssistantId: "asst_ADPQtt7Y2PSJunWTsjG7ZfDv",
 			IconUrl:     "https://img.logo.dev/netflix.com",
 			Missions: []Mission{
 				*r.Missions[0],

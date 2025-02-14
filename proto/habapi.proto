@@ -20,6 +20,7 @@ service HabiliApi {
 message Thread {
   string id = 1;
   repeated Message messages = 2;
+  int32 mission_id = 3;
 }
 
 message AgentMessageContent {

@@ -29,6 +29,7 @@ type HabApiTestSuite struct {
 }
 
 func (s *HabApiTestSuite) SetupTest() {
+	var err error
 	s.Context = context.TODO()
 
 	container := digo.NewContainer(s, digo.EnvTest, nil)
