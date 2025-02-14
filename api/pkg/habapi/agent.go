@@ -4,9 +4,10 @@ import (
 	"context"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (s *server) GetAgents(ctx context.Context, req *GetAgentsRequest) (*GetAgentsResponse, error) {
+func (s *server) GetAgents(ctx context.Context, _ *emptypb.Empty) (*GetAgentsResponse, error) {
 	tx := helpers.GetTx(ctx)
 
 	var agents []domain.Agent
