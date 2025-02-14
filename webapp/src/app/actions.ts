@@ -1,62 +1,19 @@
+import { useHabiliApiClient } from '@/hooks/habapi';
+import { CreateThreadRequest } from '@/proto/habapi';
 import { useMutation, useQuery } from '@tanstack/react-query';
-
-export type Agent = {
-  id: number;
-  name: string;
-  iconUrl: string;
-};
-
-const SAMPLE_AGENTS: Agent[] = [
-  { id: 1, name: 'Social Marketer', iconUrl: '' },
-  { id: 2, name: 'Researcher', iconUrl: '' },
-  { id: 3, name: 'Developer', iconUrl: '' },
-  { id: 4, name: 'Designer', iconUrl: '' },
-  { id: 5, name: 'Writer', iconUrl: '' },
-  { id: 6, name: 'Analyst', iconUrl: '' },
-];
-
-export type Mission = {
-  id: number;
-  name: string;
-  agentsList: Agent[];
-};
-
-const SAMPLE_MISSIONS: Mission[] = [
-  {
-    id: 1,
-    name: 'Mission 1',
-    agentsList: [SAMPLE_AGENTS[0], SAMPLE_AGENTS[2], SAMPLE_AGENTS[4]],
-  },
-  {
-    id: 2,
-    name: 'Mission 2',
-    agentsList: [SAMPLE_AGENTS[1], SAMPLE_AGENTS[3]],
-  },
-  {
-    id: 3,
-    name: 'Mission 3',
-    agentsList: [
-      SAMPLE_AGENTS[1],
-      SAMPLE_AGENTS[0],
-      SAMPLE_AGENTS[3],
-      SAMPLE_AGENTS[4],
-      SAMPLE_AGENTS[5],
-    ],
-  },
-  {
-    id: 4,
-    name: 'Mission 4',
-    agentsList: [SAMPLE_AGENTS[2], SAMPLE_AGENTS[4], SAMPLE_AGENTS[5]],
-  },
-];
+import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 
 export function useGetMissions() {
+  const client = useHabiliApiClient();
+
   return useQuery({
-    queryKey: ['server.getMissions'] as const,
-    queryFn: () => {
+    queryKey: ['habapi.getMissions'] as const,
+    queryFn: async () => {
       try {
-        // TODO: Fetch missions from the server
-        const missions = SAMPLE_MISSIONS;
+        const missions = await client
+          .getMissions(new Empty())
+          .then((res) => res.toObject());
+
         return missions;
       } catch (e) {
         console.error(e);
@@ -67,12 +24,16 @@ export function useGetMissions() {
 }
 
 export function useGetAgents() {
+  const client = useHabiliApiClient();
+
   return useQuery({
-    queryKey: ['server.getAgents'] as const,
-    queryFn: () => {
+    queryKey: ['habapi.getAgents'] as const,
+    queryFn: async () => {
       try {
-        // TODO: Fetch agents from the server
-        const agents = SAMPLE_AGENTS;
+        const agents = await client
+          .getAgents(new Empty())
+          .then((res) => res.toObject());
+
         return agents;
       } catch (e) {
         console.error(e);
@@ -89,12 +50,17 @@ export function useCreateThread({
   onSuccess?: (threadId: string) => void;
   onError?: () => void;
 } = {}) {
+  const client = useHabiliApiClient();
+
   return useMutation({
-    mutationKey: [''] as const,
-    async mutationFn() {
+    mutationKey: ['habapi.createThread'] as const,
+    async mutationFn({ missionId }: { missionId: number }) {
       try {
-        // TODO: Implement thread creation logic
-        return '1234';
+        const result = await client
+          .createThread(new CreateThreadRequest().setMissionId(missionId))
+          .then((res) => res.toObject());
+
+        return result.id;
       } catch (e) {
         console.error(e);
         throw e;
