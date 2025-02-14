@@ -2,3 +2,4 @@
 node_modules
 webapp
 .git
+/docker-compose.yml

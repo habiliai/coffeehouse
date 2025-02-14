@@ -2,31 +2,62 @@ package habapi
 
 import (
 	"context"
-	"github.com/habiliai/habiliai/api/pkg/config"
+	"github.com/golobby/dotenv"
+	"github.com/golobby/env/v2"
+	habconfig "github.com/habiliai/habiliai/api/pkg/config"
 	hablog "github.com/habiliai/habiliai/api/pkg/log"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
+	"os"
 )
 
 type cli struct {
-	cfg config.HabApiConfig
+	cfg habconfig.HabApiConfig
 }
 
 func (c *cli) ReadInConfig() error {
-	v := viper.New()
-	v.AddConfigPath(".")
-	v.SetConfigName(".env")
-	v.SetConfigType("env")
-
-	v.AutomaticEnv()
-
-	if err := v.ReadInConfig(); err == nil {
-		logger.Info("Read in config from .env")
+	// Set default values
+	c.cfg = habconfig.HabApiConfig{
+		Address:      "",
+		Port:         8000,
+		WebPort:      8001,
+		IncludeDebug: true,
+		DB: habconfig.DBConfig{
+			PingTimeout:     "5s",
+			AutoMigration:   true,
+			MaxIdleConns:    10,
+			MaxOpenConns:    100,
+			ConnMaxLifetime: "1h",
+			Host:            "localhost",
+			Port:            5432,
+			User:            "habiliai",
+			Name:            "habiliai",
+			Password:        "habiliai",
+		},
+		OpenAI: habconfig.OpenAIConfig{
+			ApiKey: "",
+		},
 	}
 
-	if err := v.Unmarshal(&c.cfg); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal config")
+	envFile, err := os.Open(".env")
+	defer func() {
+		if envFile != nil {
+			envFile.Close()
+		}
+	}()
+	if err != nil {
+		logger.Warn("failed to open .env file", "error", err)
+	} else if err := dotenv.NewDecoder(envFile).Decode(&c.cfg); err != nil {
+		logger.Warn("failed to decode .env file", "error", err)
+	} else {
+		logger.Info("Read in .env", "config", c.cfg)
 	}
+
+	if err := env.Feed(&c.cfg); err == nil {
+		logger.Info("Read in env", "config", c.cfg)
+	} else {
+		logger.Warn("failed to read in env", "error", err)
+	}
+
+	logger.Info("Read in config", "config", c.cfg)
 
 	return nil
 }
