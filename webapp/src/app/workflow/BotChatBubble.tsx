@@ -20,10 +20,12 @@ export default function BotChatBubble({
           src={profileImageUrl}
         />
       </div>
-      <div className="flex flex-col gap-y-1 pb-2">
-        <div className="flex w-full justify-between">
-          <span className="text-sm font-bold">{botName}</span>
-          <ChevronRight className="size-6" />
+      <div className="flex w-full flex-col gap-y-1 pb-2">
+        <div className="flex w-full justify-between items-center">
+          <span className="flex text-sm font-bold">{botName}</span>
+          <div className="flex flex-grow justify-end">
+            <ChevronRight className="size-4" />
+          </div>
         </div>
         <MarkdownRenderer className="prose prose-sm" content={text} />
       </div>

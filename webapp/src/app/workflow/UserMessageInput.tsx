@@ -17,7 +17,7 @@ export default function UserMessageInput({
 }) {
   return (
     <>
-      <div className="relative flex w-full rounded-xl border border-[#D9D9D9] bg-[#FAFAFA] px-3 py-2">
+      <div className="relative flex w-full rounded border border-[#D9D9D9] bg-[#FAFAFA] px-3 py-2">
         <textarea
           className="flex h-40 w-full resize-none rounded-xl bg-transparent text-sm/[1.5rem] placeholder-[#8C8C8C] outline-none"
           placeholder="Give answer to your agents."
