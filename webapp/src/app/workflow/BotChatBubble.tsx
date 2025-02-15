@@ -1,6 +1,8 @@
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ProfileImage from '@/components/ProfileImage';
-import { ChevronRight } from 'lucide-react';
+import classNames from 'classnames';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
 export default function BotChatBubble({
   botName,
@@ -11,8 +13,12 @@ export default function BotChatBubble({
   text: string;
   profileImageUrl: string;
 }) {
+  const [isCollapsed, setCollapsed] = useState<boolean>(true);
   return (
-    <div className="flex w-full flex-row items-start gap-4 bg-transparent">
+    <button
+      className="flex w-full flex-row items-start gap-4 bg-transparent text-left"
+      onClick={() => setCollapsed(!isCollapsed)}
+    >
       <div className="relative size-10 flex-shrink-0">
         <ProfileImage
           className="rounded-full"
@@ -21,14 +27,23 @@ export default function BotChatBubble({
         />
       </div>
       <div className="flex w-full flex-col gap-y-1 pb-2">
-        <div className="flex w-full justify-between items-center">
+        <div className="flex w-full items-center justify-between">
           <span className="flex text-sm font-bold">{botName}</span>
           <div className="flex flex-grow justify-end">
-            <ChevronRight className="size-4" />
+            {isCollapsed ? (
+              <ChevronRight className="size-4" />
+            ) : (
+              <ChevronDown className="size-4" />
+            )}
           </div>
         </div>
-        <MarkdownRenderer className="prose prose-sm" content={text} />
+        <MarkdownRenderer
+          className={classNames('prose prose-sm', {
+            'line-clamp-1': isCollapsed,
+          })}
+          content={text}
+        />
       </div>
-    </div>
+    </button>
   );
 }
