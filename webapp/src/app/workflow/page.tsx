@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAddMessage, useGetThread } from './actions';
+import { useAddMessage, useGetThread } from '@/actions/thread';
 import AgentProfile from '@/components/AgentProfile';
 import { ChevronLeft, CircleCheck, Ellipsis } from 'lucide-react';
 import { useCallback, useState } from 'react';

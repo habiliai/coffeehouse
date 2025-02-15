@@ -2,7 +2,9 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, LayoutGroup } from 'framer-motion';
-import { useCreateThread, useGetAgents, useGetMissions } from './actions';
+import { useGetMissions } from '@/actions/mission';
+import { useGetAgents } from '@/actions/agent';
+import { useCreateThread } from '@/actions/thread';
 import AgentProfile from '@/components/AgentProfile';
 import { VerticalCarousel } from '@/components/VerticalCarousel';
 import { useRouter } from 'next/navigation';
@@ -122,7 +124,10 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <Button className="max-w-80 w-full lg:w-fit" onClick={handleCreateThread}>
+            <Button
+              className="w-full max-w-80 lg:w-fit"
+              onClick={handleCreateThread}
+            >
               Mission Start
             </Button>
           </div>
