@@ -3,13 +3,20 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAddMessage, useGetThread } from '@/actions/thread';
 import AgentProfile from '@/components/AgentProfile';
-import { ChevronLeft, CircleCheck, Ellipsis } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronUp,
+  CircleCheck,
+  Ellipsis,
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 import UserChatBubble from './UserChatBubble';
 import BotChatBubble from './BotChatBubble';
 import UserMessageInput from './UserMessageInput';
 import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 import classNames from 'classnames';
 import ProfileImage from '@/components/ProfileImage';
 
@@ -21,6 +28,7 @@ export default function Page() {
   const [isRunning, setRunning] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState('');
   const [selectedStep, setSelectedStep] = useState<number>(0);
+  const [resultCollapsed, setResultCollapsed] = useState<boolean>(true);
 
   const { data } = useGetThread({ threadId: threadId });
 
@@ -161,16 +169,51 @@ export default function Page() {
             )}
           </div>
         </div>
-        <div className="flex h-full w-full flex-col justify-between rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-[0_0_40px_3px_#AEAEAE40]">
-          <div className="flex h-full w-full flex-col gap-[0.875rem] px-[1.875rem] py-[1.625rem]">
+        <div className="flex w-full flex-1 flex-col justify-between rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-[0_0_40px_3px_#AEAEAE40]">
+          <div className="flex w-full flex-col gap-[0.875rem] px-[1.875rem] py-[1.625rem]">
             <span className="text-[2rem]/[3.375rem] font-bold">Result</span>
+            <div
+              className={classNames(
+                'relative flex flex-1 flex-col overflow-hidden',
+                {
+                  'max-h-[calc(20.25rem)] overflow-auto': resultCollapsed,
+                },
+              )}
+            >
+              <div
+                className={classNames(
+                  'absolute z-50 flex h-full w-full items-end justify-center',
+                  {
+                    'bg-gradient-to-b from-transparent to-[#FFFFFF]':
+                      resultCollapsed,
+                  },
+                )}
+              >
+                {resultCollapsed ? (
+                  <ChevronDown
+                    className="size-10 text-[#878787]"
+                    onClick={() => setResultCollapsed(false)}
+                  />
+                ) : (
+                  <ChevronUp
+                    className="size-10 text-[#878787]"
+                    onClick={() => setResultCollapsed(true)}
+                  />
+                )}
+              </div>
+              <MarkdownRenderer content={data?.thread.resultContent ?? ''} />
+            </div>
           </div>
-          <Button
-            disabled={data?.thread.status !== 'done'}
-            onClick={handleCopyAsMarkdown}
-          >
-            Copy as Markdown
-          </Button>
+
+          <div className="flex w-full">
+            <Button
+              className="w-full"
+              disabled={data?.thread.status !== 'done'}
+              onClick={handleCopyAsMarkdown}
+            >
+              Copy as Markdown
+            </Button>
+          </div>
         </div>
       </div>
     </div>
