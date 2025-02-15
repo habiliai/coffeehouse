@@ -3,13 +3,15 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAddMessage, useGetThread } from './actions';
 import AgentProfile from '@/components/AgentProfile';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, CircleCheck, Ellipsis } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import UserChatBubble from './UserChatBubble';
 import BotChatBubble from './BotChatBubble';
 import UserMessageInput from './UserMessageInput';
 import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import classNames from 'classnames';
+import ProfileImage from '@/components/ProfileImage';
 
 export default function Page() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export default function Page() {
 
   const [isRunning, setRunning] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState('');
+  const [selectedStep, setSelectedStep] = useState<number>(0);
 
   const { data } = useGetThread({ threadId: threadId });
 
@@ -48,8 +51,8 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="flex w-full flex-row gap-[0.875rem] bg-[#F7F7F7] px-6">
-      <div className="flex w-full max-w-[8.125rem] flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-[2.375rem] shadow-[0_0_40px_3px_#AEAEAE40]">
+    <div className="flex w-full flex-row gap-[0.875rem] bg-[#F7F7F7]">
+      <div className="hidden w-full max-w-[8.125rem] flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-[2.375rem] shadow-[0_0_40px_3px_#AEAEAE40] lg:flex">
         <button className="mb-14" onClick={() => router.back()}>
           <ChevronLeft />
         </button>
@@ -72,9 +75,16 @@ export default function Page() {
       </div>
 
       <div className="flex h-full w-full max-w-[30.25rem] flex-col border border-[#E5E7EB] bg-white shadow-[0_0_40px_3px_#AEAEAE40]">
-        <div className="flex justify-center py-6">
-          {/* TODO: get mission title from server */}
-          <span className="text-sm font-normal">MISSION TITLE</span>
+        <div className="relative flex justify-center px-14 py-6">
+          <button
+            className="absolute left-2 flex lg:hidden"
+            onClick={() => router.back()}
+          >
+            <ChevronLeft className="text-black" />
+          </button>
+          <span className="line-clamp-1 text-sm font-normal">
+            {data?.thread.title}
+          </span>
         </div>
 
         <div className="flex h-full flex-col gap-4 overflow-y-auto border-t border-[#E2E8F0] px-6 py-9">
@@ -105,13 +115,50 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="flex w-full flex-col gap-[0.875rem] py-[0.875rem]">
-        <div className="flex h-[35.5rem] w-full flex-col rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-[0_0_40px_3px_#AEAEAE40]">
-          {/* TODO: Update the design of the Workflow section */}
-          <div className="flex h-full w-full flex-col gap-[0.875rem] px-[1.875rem] py-[1.625rem]">
-            <span className="text-[2rem]/[3.375rem] font-bold">Workflow</span>
-            {!data && <LoadingSpinner className="m-auto flex h-12 w-12" />}
-            <div className="flex h-full w-full flex-col"></div>
+      <div className="hidden w-full max-w-[calc(100%-8.125rem-30.25rem)] flex-col items-center gap-10 pb-[0.875rem] pr-[0.875rem] pt-16 lg:flex">
+        <div className="flex w-full max-w-[50.5625rem] flex-col items-center justify-center gap-y-4">
+          {!data && <LoadingSpinner className="m-auto flex h-12 w-12" />}
+          <div className="flex w-full p-[0.3125rem]">
+            {data?.thread.stepsList.map((_, index) => (
+              <WorkflowStepButton
+                key={`workflow-step-${index}`}
+                currentStep={data.thread.currentStep}
+                index={index}
+                selected={selectedStep === index}
+                onClick={() => setSelectedStep(index)}
+              />
+            ))}
+          </div>
+          <div className="flex w-full flex-col gap-1">
+            {data?.thread.stepsList[selectedStep].tasksList.map(
+              (task, index) => (
+                <div
+                  key={`workflow-task-${index}`}
+                  className="flex w-full items-center justify-between rounded-[0.625rem] border border-[#E2E8F0] bg-white py-[0.3125rem] pl-[1.875rem] pr-[0.3125rem]"
+                >
+                  <div className="flex gap-[1.875rem]">
+                    {task.status === 'done' ? (
+                      <CircleCheck className="text-black" />
+                    ) : (
+                      <Ellipsis className="text-black" />
+                    )}
+                    <span className="line-clamp-1 text-sm/[1.375rem] font-normal">
+                      {task.title}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    {task.requiredAgents.map((agent) => (
+                      <div
+                        key={`workflow-task-agent-${agent.id}`}
+                        className="relative size-10 overflow-hidden rounded-full"
+                      >
+                        <ProfileImage alt={agent.name} src={agent.iconUrl} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ),
+            )}
           </div>
         </div>
         <div className="flex h-full w-full flex-col justify-between rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-[0_0_40px_3px_#AEAEAE40]">
@@ -127,5 +174,33 @@ export default function Page() {
         </div>
       </div>
     </div>
+  );
+}
+
+function WorkflowStepButton({
+  currentStep,
+  selected,
+  index,
+  onClick,
+}: {
+  currentStep: number;
+  selected: boolean;
+  index: number;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      className={classNames('rounded-[0.1875rem] px-[0.75rem] py-[0.375rem]', {
+        'bg-white font-bold text-[#0F172A]': selected,
+        'bg-transparent font-medium text-[#334155]': !selected,
+        'cursor-not-allowed': index > currentStep - 1,
+      })}
+      onClick={() => {
+        if (index > currentStep - 1) return;
+        onClick?.();
+      }}
+    >
+      Step {index + 1}
+    </button>
   );
 }

@@ -5,7 +5,6 @@ const SAMPLE_AGENTS = [
   { id: 3, name: 'Developer', iconUrl: '' },
   { id: 5, name: 'Writer', iconUrl: '' },
 ];
-const SAMPLE_AGENT = { id: 1, name: 'Social Marketer', iconUrl: '' };
 const SAMPLE_THREAD = {
   id: '1',
   messagesList: [
@@ -19,7 +18,7 @@ const SAMPLE_THREAD = {
       id: '2',
       role: 2,
       text: 'Hello, I am an assistant',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -32,7 +31,7 @@ const SAMPLE_THREAD = {
       id: '4',
       role: 2,
       text: 'I am fine, thank you',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -45,7 +44,7 @@ const SAMPLE_THREAD = {
       id: '6',
       role: 2,
       text: 'I offer digital marketing, research, and development support.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -58,7 +57,7 @@ const SAMPLE_THREAD = {
       id: '8',
       role: 2,
       text: 'Sure, digital marketing involves SEO, content creation, social media management, and more.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -71,7 +70,7 @@ const SAMPLE_THREAD = {
       id: '10',
       role: 2,
       text: 'SEO involves optimizing your website for search engines.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -84,7 +83,7 @@ const SAMPLE_THREAD = {
       id: '12',
       role: 2,
       text: 'Content creation is all about engaging your audience.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -97,7 +96,7 @@ const SAMPLE_THREAD = {
       id: '14',
       role: 2,
       text: 'Sure, I can provide some examples of successful campaigns.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -110,7 +109,7 @@ const SAMPLE_THREAD = {
       id: '16',
       role: 2,
       text: 'It involves interactively engaging with customers on various platforms.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -123,7 +122,7 @@ const SAMPLE_THREAD = {
       id: '18',
       role: 2,
       text: 'Research is vital for understanding market trends and audience behavior.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -136,7 +135,7 @@ const SAMPLE_THREAD = {
       id: '20',
       role: 2,
       text: 'Yes, we provide training sessions on various digital marketing strategies.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -149,7 +148,7 @@ const SAMPLE_THREAD = {
       id: '22',
       role: 2,
       text: 'Our methods include surveys, interviews, and detailed analytics.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -162,7 +161,7 @@ const SAMPLE_THREAD = {
       id: '24',
       role: 2,
       text: 'That covers a wide range of IT solutions and technical assistance.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -175,7 +174,7 @@ const SAMPLE_THREAD = {
       id: '26',
       role: 2,
       text: 'We leverage industry-leading tools and custom analytics platforms.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -188,7 +187,7 @@ const SAMPLE_THREAD = {
       id: '28',
       role: 2,
       text: 'We focus on metrics like conversions, engagement, and ROI.',
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
     {
@@ -201,7 +200,7 @@ const SAMPLE_THREAD = {
       id: '30',
       role: 2,
       text: "You're welcome. Feel free to reach out if you have more questions.",
-      agent: SAMPLE_AGENT,
+      agent: SAMPLE_AGENTS[0],
       mentionsList: [],
     },
   ],
@@ -213,7 +212,102 @@ export function useGetThread({ threadId }: { threadId: string }) {
     queryFn: () => {
       try {
         // TODO: Fetch missions from the server
-        const thread = { ...SAMPLE_THREAD, currentStep: 3, status: 'done' };
+        const thread = {
+          ...SAMPLE_THREAD,
+          title: 'Digital Marketing Support',
+          currentStep: 2,
+          status: 'done',
+          resultContent: '',
+          stepsList: [
+            {
+              id: 1,
+              title: 'Step 1',
+              status: 'done',
+              tasksList: [
+                {
+                  id: 1,
+                  title: 'Step 1 - Task 1',
+                  status: 'done',
+                  requiredAgents: [SAMPLE_AGENTS[0], SAMPLE_AGENTS[1]],
+                },
+                {
+                  id: 2,
+                  title: 'Step 1 - Task 2',
+                  status: 'done',
+                  requiredAgents: [SAMPLE_AGENTS[2]],
+                },
+                {
+                  id: 3,
+                  title: 'Step 1 - Task 3',
+                  status: 'done',
+                  requiredAgents: [
+                    SAMPLE_AGENTS[0],
+                    SAMPLE_AGENTS[1],
+                    SAMPLE_AGENTS[2],
+                  ],
+                },
+              ],
+            },
+            {
+              id: 2,
+              title: 'Step 2',
+              status: 'in-progress',
+              tasksList: [
+                {
+                  id: 4,
+                  title: 'Step 2 - Task 1',
+                  status: 'done',
+                  requiredAgents: [SAMPLE_AGENTS[0], SAMPLE_AGENTS[1]],
+                },
+                {
+                  id: 5,
+                  title: 'Step 2 - Task 2',
+                  status: 'in-progress',
+                  requiredAgents: [SAMPLE_AGENTS[2]],
+                },
+                {
+                  id: 6,
+                  title: 'Step 2 - Task 3',
+                  status: 'pending',
+                  requiredAgents: [
+                    SAMPLE_AGENTS[0],
+                    SAMPLE_AGENTS[1],
+                    SAMPLE_AGENTS[2],
+                  ],
+                },
+              ],
+            },
+            {
+              id: 3,
+              title: 'Step 3',
+              status: 'pending',
+              tasksList: [
+                {
+                  id: 7,
+                  title: 'Step 3 - Task 1',
+                  status: 'pending',
+                  requiredAgents: [SAMPLE_AGENTS[0], SAMPLE_AGENTS[1]],
+                },
+                {
+                  id: 8,
+                  title: 'Step 3 - Task 2',
+                  status: 'pending',
+                  requiredAgents: [SAMPLE_AGENTS[2]],
+                },
+                {
+                  id: 9,
+                  title: 'Step 3 - Task 3',
+                  status: 'pending',
+                  requiredAgents: [
+                    SAMPLE_AGENTS[0],
+                    SAMPLE_AGENTS[1],
+                    SAMPLE_AGENTS[2],
+                  ],
+                },
+              ],
+            },
+          ],
+        };
         return {
           thread,
           agents: SAMPLE_AGENTS,
