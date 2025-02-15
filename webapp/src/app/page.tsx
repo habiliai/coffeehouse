@@ -17,7 +17,7 @@ export default function Home() {
   const { data: agents, isLoading: isAgentsLoading } = useGetAgents();
 
   const { mutate: createThread } = useCreateThread({
-    onSuccess: (threadId: string) => {
+    onSuccess: (threadId) => {
       router.push(`/workflow?thread_id=${threadId}`);
     },
   });
@@ -28,11 +28,11 @@ export default function Home() {
 
   const handleMissionChange = useCallback(
     (missionId: number) => {
-      const mission = missions?.missionsList.find((m) => m.id === missionId);
+      const mission = missions.find((m) => m.id === missionId);
       if (!mission) return;
 
       setSelectedMission(mission);
-      setAgentSlots(Array(mission.agentsList.length).fill(null));
+      setAgentSlots(Array(mission.agentIdsList.length).fill(null));
     },
     [missions],
   );
@@ -40,17 +40,16 @@ export default function Home() {
   const handleAgentSlotChange = useCallback(() => {
     if (!selectedMission || !agents) return;
 
-    const matchedAgents = selectedMission.agentsList.map(
-      (requiredAgent) =>
-        agents.agentsList.find((agent) => agent.id === requiredAgent.id) ??
+    const matchedAgents = selectedMission.agentIdsList.map(
+      (agentId) =>
+        agents.find((agent) => agent.id === agentId) ??
         null,
     );
-    setAgentSlots(matchedAgents ?? DEFAULT_AGENT_SLOT);
+    setAgentSlots(matchedAgents);
   }, [agents, selectedMission]);
 
   const handleCreateThread = useCallback(() => {
     if (!selectedMission) return;
-
     createThread({ missionId: selectedMission.id });
   }, [selectedMission, createThread]);
 
@@ -59,7 +58,7 @@ export default function Home() {
       .filter((slot) => slot !== null)
       .map((slot) => slot.id);
 
-    return agents?.agentsList.filter(
+    return agents.filter(
       (agent) => !assignedAgentIds.includes(agent.id),
     );
   }, [agents, agentSlots]);
@@ -90,7 +89,7 @@ export default function Home() {
             <VerticalCarousel
               itemClassName="text-xl lg:text-3xl"
               items={
-                missions?.missionsList.map((mission) => ({
+                missions.map((mission) => ({
                   value: mission.id.toString(),
                   name: mission.name,
                 })) ?? []

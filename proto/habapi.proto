@@ -7,18 +7,71 @@ import "google/protobuf/empty.proto";
 
 service HabiliApi {
   rpc GetMissions(google.protobuf.Empty) returns (GetMissionsResponse);
+  rpc GetMission(MissionId) returns (Mission);
+
   rpc GetAgents(google.protobuf.Empty) returns (GetAgentsResponse);
 
   rpc CreateThread(CreateThreadRequest) returns (ThreadId);
-  rpc DeleteThread(ThreadId) returns (google.protobuf.Empty);
   rpc GetThread(ThreadId) returns (Thread);
 
-
   rpc AddMessage(AddMessageRequest) returns (google.protobuf.Empty);
+
+  rpc GetWorkflowStatus(ThreadId) returns (WorkflowStatus);
+  rpc GetAgentsStatus(ThreadId) returns (AgentsStatus);
+  rpc GetThreadStatus(GetThreadStatusRequest) returns (ThreadStatus);
+}
+
+message GetThreadStatusRequest {
+  int32 thread_id = 1;
+  string last_message_id = 2;
+}
+
+message ThreadStatus {
+  bool has_new_message = 1;
+}
+
+message ActionWork {
+  bool done = 1;
+  Action action = 2;
+}
+
+message AgentWork {
+  enum Status {
+    UNSPECIFIED = 0;
+    WORKING = 1;
+    IDLE = 2;
+    WAITING = 3;
+  }
+  Agent agent = 1;
+  Status status = 2;
+}
+
+message AgentsStatus {
+  repeated AgentWork works = 1;
+}
+
+message WorkflowStatus {
+  repeated ActionWork works = 1;
+}
+
+message MissionId {
+  int32 id = 1;
+}
+
+message Action {
+  int32 id = 1;
+  Agent agent = 2;
+  string subject = 3;
+}
+
+message Step {
+  int32 id = 1;
+  int32 seq_no = 3;
+  repeated Action actions = 2;
 }
 
 message Thread {
-  string id = 1;
+  int32 id = 1;
   repeated Message messages = 2;
   int32 mission_id = 3;
 }
@@ -54,7 +107,8 @@ message GetMissionsResponse {
 message Mission {
   int32 id = 1;
   string name = 2;
-  repeated Agent agents = 3;
+  repeated Step steps = 3;
+  repeated int32 agent_ids = 4;
 }
 
 message CreateThreadRequest {
@@ -62,9 +116,16 @@ message CreateThreadRequest {
 }
 
 message Agent {
+  enum Status {
+    UNSPECIFIED = 0;
+    WORKING = 1;
+    IDLE = 2;
+    WAITING = 3;
+  }
   string name = 1;
   string icon_url = 2;
   int32 id = 3;
+  Status status = 4;
 }
 
 message GetAgentsResponse {
@@ -73,10 +134,10 @@ message GetAgentsResponse {
 }
 
 message AddMessageRequest {
-  string thread_id = 1;
-  string message = 2;
+  int32 thread_id = 1;
+  optional string message = 2;
 }
 
 message ThreadId {
-  string id = 1;
+  int32 id = 1;
 }

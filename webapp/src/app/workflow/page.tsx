@@ -1,27 +1,41 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAddMessage, useGetThread } from './actions';
+import { useAddMessage, useGetStatus, useGetThread } from './actions';
 import AgentProfile from '@/components/AgentProfile';
 import { ChevronLeft } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import UserChatBubble from './UserChatBubble';
 import BotChatBubble from './BotChatBubble';
 import UserMessageInput from './UserMessageInput';
-import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { AgentWork } from '@/proto/habapi';
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const threadId = searchParams.get('thread_id') ?? '';
 
   const [isRunning, setRunning] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState('');
 
-  const { data } = useGetThread({ threadId: threadId });
+  const threadId = useMemo(() => {
+    const threadId = searchParams.get('thread_id');
+    return threadId ? parseInt(threadId) : null;
+  }, [searchParams]);
+
+  const {
+    data: { thread, mission, lastMessageId },
+  } = useGetThread({ threadId });
+
+  const {
+    data: { agentWorks },
+  } = useGetStatus({
+    threadId,
+    lastMessageId,
+  });
 
   const { mutate: addMessage } = useAddMessage({
+    threadId,
     onSuccess: () => {
       setRunning(false);
     },
@@ -29,19 +43,44 @@ export default function Page() {
       setRunning(false);
     },
     onMutate: (message) => {
-      data?.thread.messagesList.push({
+      setUserMessage('');
+
+      const { text, mentions } = message
+        .split(' ')
+        .map((word) => {
+          const res = { text: word, mentions: [] };
+          if (!word.startsWith('@')) {
+            return res;
+          }
+
+          const mention = word.slice(1);
+          return { text: '', mentions: [mention] };
+        })
+        .reduce((acc, { text, mentions }) => {
+          acc.mentions.push(...mentions);
+          if (text === '') {
+            return acc;
+          }
+
+          if (acc.text !== '') {
+            acc.text += ' ';
+          }
+          acc.text += text;
+          return acc;
+        });
+
+      thread?.messagesList.push({
         id: Date.now().toString(),
         role: 1,
-        text: message,
-        mentionsList: [],
+        text: text,
+        mentionsList: mentions,
       });
     },
   });
 
   const handleOnSubmitUserMessage = useCallback(() => {
     addMessage({ message: userMessage });
-    setUserMessage('');
-  }, [addMessage, userMessage, setUserMessage]);
+  }, [addMessage, userMessage]);
 
   const handleCopyAsMarkdown = useCallback(() => {
     // TODO: Implement copy as markdown logic
@@ -56,48 +95,78 @@ export default function Page() {
         <div className="mb-7">
           <span className="text-sm font-bold">Agents</span>
         </div>
-        {!data && <LoadingSpinner className="flex h-12 w-12" />}
-        {data?.agents.map((agent) => (
-          <AgentProfile
-            key={`workflow-agent-${agent.id}`}
-            name={agent.name}
-            imageUrl={agent.iconUrl}
-            imageClassName="size-10"
-          >
-            <AgentProfile.Label className="text-sm font-light">
-              {agent.name}
-            </AgentProfile.Label>
-          </AgentProfile>
-        ))}
+        {agentWorks.length > 0 ? (
+          agentWorks.map(({ agent, status }) => (
+            <AgentProfile
+              key={`workflow-agent-${agent.id}`}
+              name={agent.name}
+              imageUrl={agent.iconUrl}
+              imageClassName="size-10"
+              status={status}
+            >
+              <AgentProfile.Label className="text-sm font-light">
+                {agent.name}
+              </AgentProfile.Label>
+            </AgentProfile>
+          ))
+        ) : (
+          <LoadingSpinner className="m-auto flex h-12 w-12" />
+        )}
       </div>
 
       <div className="flex h-full w-full max-w-[30.25rem] flex-col border border-[#E5E7EB] bg-white shadow-[0_0_40px_3px_#AEAEAE40]">
         <div className="flex justify-center py-6">
-          {/* TODO: get mission title from server */}
-          <span className="text-sm font-normal">MISSION TITLE</span>
+          {mission ? (
+            <span className="text-sm font-normal">{mission.name}</span>
+          ) : (
+            <LoadingSpinner className="m-auto flex h-12 w-12" />
+          )}
         </div>
 
         <div className="flex h-full flex-col gap-4 overflow-y-auto border-t border-[#E2E8F0] px-6 py-9">
-          {!data && <LoadingSpinner className="m-auto flex h-12 w-12" />}
-          {data?.thread.messagesList.map(({ id, role, text, agent }) => {
-            switch (role) {
-              case 1:
-                return <UserChatBubble key={`thread-user-${id}`} text={text} />;
-              case 2:
-                return (
+          {!thread ? (
+            <LoadingSpinner className="m-auto flex h-12 w-12" />
+          ) : (
+            <>
+              {thread.messagesList.map(
+                ({ id, role, text, agent, mentionsList: mentions }) => {
+                  switch (role) {
+                    case 1:
+                      return (
+                        <UserChatBubble
+                          key={`thread-user-${id}`}
+                          text={text}
+                          mentions={mentions}
+                        />
+                      );
+                    case 2:
+                      return (
+                        <BotChatBubble
+                          key={`thread-bot-${id}`}
+                          botName={agent?.name || ''}
+                          text={text}
+                          profileImageUrl={agent?.iconUrl || ''}
+                        />
+                      );
+                  }
+                },
+              )}
+              {agentWorks
+                .filter(({ status }) => status === AgentWork.Status.WORKING)
+                .map(({ agent }) => (
                   <BotChatBubble
-                    key={`thread-bot-${id}`}
-                    botName={agent?.name || ''}
-                    text={text}
-                    profileImageUrl={agent?.iconUrl || ''}
+                    key={`thread-bot-completing-${agent.id}`}
+                    botName={agent.name}
+                    profileImageUrl={agent.iconUrl}
+                    working={true}
                   />
-                );
-            }
-          })}
+                ))}
+            </>
+          )}
         </div>
         <div className="relative flex w-full flex-grow items-end px-6 pb-[1.875rem]">
           <UserMessageInput
-            loading={isRunning || !data}
+            loading={isRunning || !thread}
             value={userMessage}
             onChange={(v) => setUserMessage(v)}
             onSubmit={handleOnSubmitUserMessage}
@@ -110,7 +179,7 @@ export default function Page() {
           {/* TODO: Update the design of the Workflow section */}
           <div className="flex h-full w-full flex-col gap-[0.875rem] px-[1.875rem] py-[1.625rem]">
             <span className="text-[2rem]/[3.375rem] font-bold">Workflow</span>
-            {!data && <LoadingSpinner className="m-auto flex h-12 w-12" />}
+            {!thread && <LoadingSpinner className="m-auto flex h-12 w-12" />}
             <div className="flex h-full w-full flex-col"></div>
           </div>
         </div>
@@ -118,12 +187,12 @@ export default function Page() {
           <div className="flex h-full w-full flex-col gap-[0.875rem] px-[1.875rem] py-[1.625rem]">
             <span className="text-[2rem]/[3.375rem] font-bold">Result</span>
           </div>
-          <Button
-            disabled={data?.thread.status !== 'done'}
-            onClick={handleCopyAsMarkdown}
-          >
-            Copy as Markdown
-          </Button>
+          {/*<Button*/}
+          {/*  disabled={thread?.status !== 'done'}*/}
+          {/*  onClick={handleCopyAsMarkdown}*/}
+          {/*>*/}
+          {/*  Copy as Markdown*/}
+          {/*</Button>*/}
         </div>
       </div>
     </div>

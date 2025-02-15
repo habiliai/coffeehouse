@@ -1,15 +1,19 @@
-package domain
+package domaintest
 
-import "gorm.io/gorm"
+import (
+	"github.com/habiliai/habiliai/api/pkg/domain"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+)
 
 type Seed struct {
-	Agents   []*Agent
-	Missions []*Mission
-	Tasks    []*Task
+	Agents   []*domain.Agent
+	Missions []*domain.Mission
+	Tasks    []*domain.Task
 }
 
 func SeedForTest(tx *gorm.DB) (r Seed, err error) {
-	mission := &Mission{
+	mission := &domain.Mission{
 		Name: "Mission 1",
 	}
 	if err := mission.Save(tx); err != nil {
@@ -17,7 +21,7 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 	}
 	r.Missions = append(r.Missions, mission)
 
-	r.Tasks = []*Task{
+	r.Tasks = []*domain.Task{
 		{
 			SeqNo:     1,
 			MissionID: mission.ID,
@@ -45,10 +49,10 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 		}
 	}
 
-	r.Agents = []*Agent{
+	r.Agents = []*domain.Agent{
 		{
 			Name:        "engineer",
-			AssistantId: "asst_ADPQtt7Y2PSJunWTsjG7ZfDv",
+			AssistantId: "asst_1Ov3IAylZU7Z9ansD7ZBWufs",
 			IconUrl:     "https://img.logo.dev/github.com",
 			Missions: []Mission{
 				*r.Missions[0],
@@ -56,7 +60,7 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 		},
 		{
 			Name:        "designer",
-			AssistantId: "asst_ADPQtt7Y2PSJunWTsjG7ZfDv",
+			AssistantId: "asst_1Ov3IAylZU7Z9ansD7ZBWufs",
 			IconUrl:     "https://img.logo.dev/facebook.com",
 			Missions: []Mission{
 				*r.Missions[0],
@@ -64,7 +68,7 @@ func SeedForTest(tx *gorm.DB) (r Seed, err error) {
 		},
 		{
 			Name:        "manager",
-			AssistantId: "asst_ADPQtt7Y2PSJunWTsjG7ZfDv",
+			AssistantId: "asst_1Ov3IAylZU7Z9ansD7ZBWufs",
 			IconUrl:     "https://img.logo.dev/netflix.com",
 			Missions: []Mission{
 				*r.Missions[0],

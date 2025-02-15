@@ -59,6 +59,9 @@ func createGrpcServer(
 			info *grpc.UnaryServerInfo,
 			handler grpc.UnaryHandler,
 		) (resp interface{}, rErr error) {
+			eventListener := helpers.NewEventListener()
+			ctx = helpers.WithEventListener(ctx, eventListener)
+
 			md, ok := metadata.FromIncomingContext(ctx)
 			if !ok {
 				md = metadata.New(nil)
@@ -93,6 +96,8 @@ func createGrpcServer(
 				resp, err = handler(ctx, req)
 				return
 			})
+
+			eventListener.Emit(ctx, helpers.EventTypeEndTransaction)
 
 			rErr = handleErrorToGrpcStatus(rErr)
 

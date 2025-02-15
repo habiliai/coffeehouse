@@ -19,7 +19,11 @@ func (s *server) GetMissions(ctx context.Context, _ *emptypb.Empty) (*GetMission
 	}
 
 	var missions []domain.Mission
-	if err := stmt.Preload(clause.Associations).Order("id ASC").Find(&missions).Error; err != nil {
+	if err := stmt.Preload(clause.Associations).
+		Preload("Steps.Actions").
+		Preload("Steps.Actions.Agent").
+		Order("id ASC").
+		Find(&missions).Error; err != nil {
 		return nil, errors.Wrap(err, "failed to find missions")
 	}
 
@@ -33,4 +37,20 @@ func (s *server) GetMissions(ctx context.Context, _ *emptypb.Empty) (*GetMission
 	}
 
 	return resp, nil
+}
+
+func (s *server) GetMission(ctx context.Context, req *MissionId) (*Mission, error) {
+	tx := helpers.GetTx(ctx)
+
+	var mission domain.Mission
+	err := tx.
+		Preload(clause.Associations).
+		Preload("Steps.Actions").
+		Preload("Steps.Actions.Agent").
+		First(&mission, req.Id).Error
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to find mission by id %d", req.Id)
+	}
+
+	return newMissionPbFromDb(&mission), nil
 }

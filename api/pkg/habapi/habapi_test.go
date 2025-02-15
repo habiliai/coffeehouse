@@ -37,7 +37,7 @@ func (s *HabApiTestSuite) SetupTest() {
 	s.server = digo.MustGet[*grpc.Server](container, habgrpc.ServerKey)
 
 	s.eg.Go(func() error {
-		lis, err := net.Listen("tcp", ":50051")
+		lis, err := net.Listen("tcp", "0.0.0.0:50051")
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -45,18 +45,21 @@ func (s *HabApiTestSuite) SetupTest() {
 		return errors.WithStack(s.server.Serve(lis))
 	})
 
-	s.Require().NoError(habgrpc.WaitForServing(s, "localhost:50051"))
+	s.Require().NoError(habgrpc.WaitForServing(s, "127.0.0.1:50051"))
 
-	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	s.conn, err = grpc.NewClient("127.0.0.1:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	s.Require().NoError(err)
 
-	s.conn = conn
-	s.client = habapi.NewHabiliApiClient(conn)
+	s.client = habapi.NewHabiliApiClient(s.conn)
 }
 
 func (s *HabApiTestSuite) TearDownTest() {
-	s.conn.Close()
-	s.server.Stop()
+	if s.conn != nil {
+		s.conn.Close()
+	}
+	if s.server != nil {
+		s.server.Stop()
+	}
 	s.eg.Wait()
 }
 

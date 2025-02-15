@@ -12,6 +12,8 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
+	"os/signal"
+	"syscall"
 )
 
 func (c *cli) newServeCmd() *cobra.Command {
@@ -19,14 +21,16 @@ func (c *cli) newServeCmd() *cobra.Command {
 		Use:   "serve",
 		Short: "Start the server",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx := cmd.Context()
+			ctx, cancel := signal.NotifyContext(cmd.Context(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGABRT)
+			defer cancel()
+
 			if err := c.ReadInConfig(); err != nil {
 				return err
 			}
 
 			logger.Debug("start server", "config", c.cfg)
 
-			container := digo.NewContainer(cmd.Context(), digo.EnvProd, &c.cfg)
+			container := digo.NewContainer(ctx, digo.EnvProd, &c.cfg)
 			grpcServer, err := digo.Get[*grpc.Server](container, habgrpc.ServerKey)
 			if err != nil {
 				return err
@@ -35,6 +39,7 @@ func (c *cli) newServeCmd() *cobra.Command {
 			go func() {
 				<-ctx.Done()
 				grpcServer.GracefulStop()
+				logger.Info("grpc server stopped")
 			}()
 
 			eg := errgroup.Group{}
@@ -81,6 +86,7 @@ func (c *cli) newServeCmd() *cobra.Command {
 			go func() {
 				<-ctx.Done()
 				httpServer.Close()
+				logger.Info("http server stopped")
 			}()
 
 			eg.Go(func() error {

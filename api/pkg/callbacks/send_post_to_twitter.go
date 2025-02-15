@@ -1,4 +1,4 @@
-package action
+package callbacks
 
 import (
 	"context"
@@ -6,18 +6,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (s *service) SendPostToTwitter(ctx context.Context, args []byte) ([]byte, error) {
+func SendPostToTwitter(s *service, ctx context.Context, args []byte, metadata Metadata) (any, error) {
 	request := struct {
 		Content  string   `json:"content"`
 		Hashtags []string `json:"hashtags"`
 		Media    []string `json:"media"`
 	}{}
-
-	response := struct {
-		Success bool `json:"success"`
-	}{
-		Success: true,
-	}
 
 	if err := json.Unmarshal(args, &request); err != nil {
 		return nil, errors.Wrapf(err, "failed to unmarshal args")
@@ -25,10 +19,9 @@ func (s *service) SendPostToTwitter(ctx context.Context, args []byte) ([]byte, e
 
 	logger.Debug("sendPostToTwitter", "request", request)
 
-	resJson, err := json.Marshal(&response)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to marshal response")
-	}
+	return nil, nil
+}
 
-	return resJson, nil
+func init() {
+	dispatchFunctions["send_post_to_twitter"] = SendPostToTwitter
 }

@@ -6,8 +6,11 @@ type HabApiConfig struct {
 	WebPort      int    `env:"WEB_PORT"`
 	IncludeDebug bool   `env:"INCLUDE_DEBUG"`
 
-	DB     DBConfig
-	OpenAI OpenAIConfig
+	DB         DBConfig
+	OpenAI     OpenAIConfig
+	LumaApiKey string `env:"LUMA_API_KEY"`
+
+	OpenWeatherApiKey string `env:"OPENWEATHER_API_KEY"`
 }
 
 type OpenAIConfig struct {
