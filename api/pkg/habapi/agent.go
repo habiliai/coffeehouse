@@ -37,7 +37,7 @@ func (s *server) GetAgentsStatus(ctx context.Context, req *ThreadId) (*AgentsSta
 	var works []domain.AgentWork
 	if err := helpers.GetTx(ctx).
 		Preload("Agent").
-		Order("id ASC").
+		Order("agent_id ASC").
 		Find(&works, "thread_id = ?", thread.ID).Error; err != nil {
 		return nil, errors.Wrapf(err, "failed to find agent works")
 	}

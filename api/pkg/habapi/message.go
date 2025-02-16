@@ -78,9 +78,54 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Message, error) {
+func (s *server) convMessage(ctx context.Context, threadId string, data *openai.Message) (*Message, error) {
 	tx := helpers.GetTx(ctx)
 
+	messageData := NewMessageData(s.openai, threadId, data.ID, data.Metadata)
+
+	text := data.Content[0].Text.Value
+	msg := &Message{
+		Text: text,
+		Id:   data.ID,
+	}
+	switch data.Role {
+	case openai.MessageRoleAssistant:
+		{
+			msg.Role = Message_ASSISTANT
+			run, err := s.getRun(ctx, threadId, data.RunID)
+			if err != nil {
+				return nil, err
+			}
+
+			var agent domain.Agent
+			if err := tx.First(&agent, "assistant_id = ?", run.AssistantID).Error; err != nil {
+				return nil, errors.Wrapf(err, "failed to find agent with assistant id %s", run.AssistantID)
+			}
+
+			msg.Agent = newAgentPbFromDb(&agent)
+		}
+	case openai.MessageRoleUser:
+		{
+			msg.Role = Message_USER
+
+			var agents []domain.Agent
+			if err := tx.Find(&agents, "id IN ?", messageData.GetAgentIds()).Error; err != nil {
+				return nil, errors.Wrapf(err, "failed to find agents with ids %v", messageData.GetAgentIds())
+			}
+
+			mentions := gog.Map(agents, func(a domain.Agent) string {
+				return a.Name
+			})
+			msg.Mentions = mentions
+		}
+	default:
+		return nil, errors.Errorf("unknown message role: %s", data.Role)
+	}
+
+	return msg, nil
+}
+
+func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Message, error) {
 	var messages []*Message
 	page, err := s.openai.Beta.Threads.Messages.List(ctx, threadId, openai.BetaThreadMessageListParams{
 		Order: openai.F(openai.BetaThreadMessageListParamsOrderAsc),
@@ -94,45 +139,9 @@ func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Messag
 			if len(data.Content) == 0 {
 				continue
 			}
-			messageData := NewMessageData(s.openai, threadId, data.ID, data.Metadata)
-
-			text := data.Content[0].Text.Value
-			msg := &Message{
-				Text: text,
-				Id:   data.ID,
-			}
-			switch data.Role {
-			case openai.MessageRoleAssistant:
-				{
-					msg.Role = Message_ASSISTANT
-					run, err := s.getRun(ctx, threadId, data.RunID)
-					if err != nil {
-						return nil, err
-					}
-
-					var agent domain.Agent
-					if err := tx.First(&agent, "assistant_id = ?", run.AssistantID).Error; err != nil {
-						return nil, errors.Wrapf(err, "failed to find agent with assistant id %s", run.AssistantID)
-					}
-
-					msg.Agent = newAgentPbFromDb(&agent)
-				}
-			case openai.MessageRoleUser:
-				{
-					msg.Role = Message_USER
-
-					var agents []domain.Agent
-					if err := tx.Find(&agents, "id IN ?", messageData.GetAgentIds()).Error; err != nil {
-						return nil, errors.Wrapf(err, "failed to find agents with ids %v", messageData.GetAgentIds())
-					}
-
-					mentions := gog.Map(agents, func(a domain.Agent) string {
-						return a.Name
-					})
-					msg.Mentions = mentions
-				}
-			default:
-				return nil, errors.Errorf("unknown message role: %s", data.Role)
+			msg, err := s.convMessage(ctx, threadId, &data)
+			if err != nil {
+				return nil, err
 			}
 			messages = append(messages, msg)
 		}
@@ -150,18 +159,23 @@ func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Messag
 	return messages, nil
 }
 
-func (s *server) getLastMessageId(ctx context.Context, threadId string) (string, error) {
+func (s *server) getLastMessage(ctx context.Context, threadId string) (*Message, error) {
 	page, err := s.openai.Beta.Threads.Messages.List(ctx, threadId, openai.BetaThreadMessageListParams{
 		Order: openai.F(openai.BetaThreadMessageListParamsOrderDesc),
 		Limit: openai.F(int64(1)),
 	})
 	if err != nil {
-		return "", errors.Wrapf(err, "failed to list messages")
+		return nil, errors.Wrapf(err, "failed to list messages")
 	}
 
 	if len(page.Data) == 0 || len(page.Data[0].Content) == 0 {
-		return "", nil
+		return nil, nil
 	}
 
-	return page.Data[0].ID, nil
+	msg, err := s.convMessage(ctx, threadId, &page.Data[0])
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }

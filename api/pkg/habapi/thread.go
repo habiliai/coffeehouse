@@ -129,9 +129,15 @@ func (s *server) GetThreadStatus(ctx context.Context, req *GetThreadStatusReques
 		return nil, err
 	}
 
-	lastMessageId, err := s.getLastMessageId(ctx, thread.OpenaiThreadId)
+	lastMessage, err := s.getLastMessage(ctx, thread.OpenaiThreadId)
 	if err != nil {
 		return nil, err
+	}
+	logger.Debug("last message", "lastMessage", lastMessage)
+
+	lastMessageId := ""
+	if lastMessage != nil {
+		lastMessageId = lastMessage.Id
 	}
 
 	res := &ThreadStatus{}

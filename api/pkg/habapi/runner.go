@@ -73,15 +73,11 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 		return err
 	}
 
-	messages, err := s.getAllMessages(ctx, thread.OpenaiThreadId)
+	lastMessage, err := s.getLastMessage(ctx, thread.OpenaiThreadId)
 	if err != nil {
 		return err
 	}
 
-	var lastMessage *Message
-	if len(messages) > 0 {
-		lastMessage = messages[len(messages)-1]
-	}
 	var agents []*domain.Agent
 	if lastMessage != nil && lastMessage.Role == Message_USER && len(lastMessage.Mentions) > 0 {
 		for _, mention := range lastMessage.Mentions {
