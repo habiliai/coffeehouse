@@ -125,6 +125,11 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 			return errors.Wrapf(err, "failed to find action work")
 		}
 
+		actionWork.Error = ""
+		if err := actionWork.Save(tx); err != nil {
+			return err
+		}
+
 		var agentWork domain.AgentWork
 		if err := tx.Preload("Agent").First(&agentWork, "agent_id = ? AND thread_id = ?", action.Agent.ID, thread.ID).Error; err != nil {
 			return errors.Wrapf(err, "failed to find agent work")
@@ -135,52 +140,63 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 			return err
 		}
 
-		for interrupt := false; !interrupt; {
-			logger.Info("polling doRunner status", "doRunner", run)
-			run, err = s.openai.Beta.Threads.Runs.PollStatus(ctx, thread.OpenaiThreadId, run.ID, 500)
-			if err != nil {
-				errors.Wrapf(err, "failed to get doRunner")
-			}
-
-			thread.CurrentRunId = run.ID
-			if err := thread.Save(tx); err != nil {
-				return err
-			}
-
-			switch run.Status {
-			case openai.RunStatusCompleted:
-				logger.Debug("doRunner completed", "doRunner", run)
-				if agentWork.Status != domain.AgentStatusIdle {
-					if !agentWork.Agent.IncludeQuestionIntent {
-						agentWork.Status = domain.AgentStatusIdle
-					} else {
-						agentWork.Status = domain.AgentStatusWaiting
-					}
-					if err := agentWork.Save(tx); err != nil {
-						return err
-					}
-				}
-				interrupt = true
-			case openai.RunStatusFailed:
-				return errors.Wrapf(haberrors.ErrRuntime, "doRunner failed: %s", run.LastError.Message)
-			case openai.RunStatusIncomplete:
-				return errors.Wrapf(haberrors.ErrRuntime, "Run incomplete: %s", run.IncompleteDetails.Reason)
-			case openai.RunStatusExpired:
-				return errors.Wrapf(haberrors.ErrRuntime, "Run expired. expires_at: %s", time.Unix(run.ExpiresAt, 0))
-			case openai.RunStatusCancelled:
-				return errors.Wrapf(haberrors.ErrRuntime, "Run cancelled")
-			case openai.RunStatusRequiresAction:
-				run, err = s.requiresCallback(ctx, run, &thread, &actionWork, &agentWork)
+		if err := func() error {
+			for interrupt := false; !interrupt; {
+				logger.Info("polling doRunner status", "doRunner", run)
+				run, err = s.openai.Beta.Threads.Runs.PollStatus(ctx, thread.OpenaiThreadId, run.ID, 500)
 				if err != nil {
+					errors.Wrapf(err, "failed to get doRunner")
+				}
+
+				thread.CurrentRunId = run.ID
+				if err := thread.Save(tx); err != nil {
 					return err
 				}
-			default:
-				return errors.Wrapf(haberrors.ErrBadRequest, "invalid thread doRunner status: received %s", run.Status)
+
+				switch run.Status {
+				case openai.RunStatusCompleted:
+					logger.Debug("doRunner completed", "doRunner", run)
+					if agentWork.Status != domain.AgentStatusIdle {
+						if !agentWork.Agent.IncludeQuestionIntent {
+							agentWork.Status = domain.AgentStatusIdle
+						} else {
+							agentWork.Status = domain.AgentStatusWaiting
+						}
+						if err := agentWork.Save(tx); err != nil {
+							return err
+						}
+					}
+					interrupt = true
+				case openai.RunStatusFailed:
+					return errors.Wrapf(haberrors.ErrRuntime, "doRunner failed: %s", run.LastError.Message)
+				case openai.RunStatusIncomplete:
+					return errors.Wrapf(haberrors.ErrRuntime, "Run incomplete: %s", run.IncompleteDetails.Reason)
+				case openai.RunStatusExpired:
+					return errors.Wrapf(haberrors.ErrRuntime, "Run expired. expires_at: %s", time.Unix(run.ExpiresAt, 0))
+				case openai.RunStatusCancelled:
+					return errors.Wrapf(haberrors.ErrRuntime, "Run cancelled")
+				case openai.RunStatusRequiresAction:
+					run, err = s.requiresCallback(ctx, run, &thread, &actionWork, &agentWork)
+					if err != nil {
+						return err
+					}
+					return nil
+				default:
+					return errors.Wrapf(haberrors.ErrBadRequest, "invalid thread doRunner status: received %s", run.Status)
+				}
+			}
+
+			return nil
+		}(); err != nil {
+			logger.Warn("failed to doRunner step", "err", err, "agent", action.Agent.Name)
+			actionWork.Error = err.Error()
+			if err := actionWork.Save(tx); err != nil {
+				return err
 			}
 		}
 	}
 
-	eventListener.Emit(ctx, helpers.EventTypeEndRunning)
+	eventListener.Emit(ctx, helpers.EventTypeCompletedAction)
 
 	return nil
 }

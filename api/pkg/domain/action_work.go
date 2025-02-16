@@ -11,7 +11,8 @@ type ActionWork struct {
 	ThreadID uint   `gorm:"primarykey"`
 	Thread   Thread `gorm:"foreignKey:ThreadID"`
 
-	Done bool
+	Done  bool
+	Error string
 }
 
 func (aw *ActionWork) Save(db *gorm.DB) error {

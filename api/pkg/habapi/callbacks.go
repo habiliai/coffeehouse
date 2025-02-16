@@ -28,20 +28,21 @@ func (s *server) requiresCallback(ctx context.Context, run *openai.Run, thread *
 			Result  any    `json:"result.omitempty"`
 		}
 	)
+	var outputErr error
 	switch strings.ToLower(toolCall.Function.Name) {
 	case "done_agent": // this special case is used to mark the agent as idle
-		output.Result, err = s.doneAgent(ctx, thread, agentWork, actionWork)
+		output.Result, outputErr = s.doneAgent(ctx, thread, agentWork, actionWork)
 	default:
 		metadata := callbacks.Metadata{
 			AgentWork:  agentWork,
 			ActionWork: actionWork,
 		}
-		output.Result, err = s.actionService.Dispatch(ctx, toolCall.Function.Name, []byte(toolCall.Function.Arguments), metadata)
+		output.Result, outputErr = s.actionService.Dispatch(ctx, toolCall.Function.Name, []byte(toolCall.Function.Arguments), metadata)
 	}
 
-	if err != nil {
+	if outputErr != nil {
 		output.Success = false
-		output.Reason = err.Error()
+		output.Reason = outputErr.Error()
 	} else {
 		output.Success = true
 		output.Reason = ""
@@ -49,7 +50,7 @@ func (s *server) requiresCallback(ctx context.Context, run *openai.Run, thread *
 
 	outputJson, err := json.Marshal(output)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to marshal output")
+		logger.Warn("failed to marshal output", "error", err)
 	}
 	toolCallRun, err := s.openai.Beta.Threads.Runs.SubmitToolOutputs(ctx, run.ThreadID, run.ID, openai.BetaThreadRunSubmitToolOutputsParams{
 		ToolOutputs: openai.F([]openai.BetaThreadRunSubmitToolOutputsParamsToolOutput{
@@ -60,7 +61,7 @@ func (s *server) requiresCallback(ctx context.Context, run *openai.Run, thread *
 		}),
 	})
 
-	return toolCallRun, nil
+	return toolCallRun, outputErr
 }
 
 func (s *server) doneAgent(
@@ -125,7 +126,7 @@ func (s *server) doneAgent(
 
 	if hasNextStep {
 		logger.Info("go to next step", "thread_id", thread.ID, "seq_no", nextStepSeqNo)
-		helpers.On(ctx, helpers.EventTypeEndRunning, func(ctx context.Context) {
+		helpers.On(ctx, helpers.EventTypeCompletedAction, func(ctx context.Context) {
 			if err := s.run(ctx, thread.ID); err != nil {
 				logger.Error("failed to run thread", "thread_id", thread.ID, "error", err)
 			}

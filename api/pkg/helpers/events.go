@@ -11,7 +11,7 @@ type EventType int
 
 const (
 	EventTypeEndTransaction EventType = iota
-	EventTypeEndRunning
+	EventTypeCompletedAction
 )
 
 const (
@@ -24,7 +24,7 @@ func (e *EventListener) Emit(ctx context.Context, eventType EventType) {
 		for _, fn := range e.OnEndTransactions {
 			fn(ctx)
 		}
-	case EventTypeEndRunning:
+	case EventTypeCompletedAction:
 		for _, fn := range e.OnMessageCompleted {
 			fn(ctx)
 		}
@@ -50,7 +50,7 @@ func On(ctx context.Context, eventType EventType, fn func(ctx context.Context)) 
 		switch eventType {
 		case EventTypeEndTransaction:
 			eventListener.OnEndTransactions = append(eventListener.OnEndTransactions, fn)
-		case EventTypeEndRunning:
+		case EventTypeCompletedAction:
 			eventListener.OnMessageCompleted = append(eventListener.OnMessageCompleted, fn)
 		}
 	}

@@ -28,6 +28,9 @@ func (s *server) GetWorkflowStatus(ctx context.Context, req *ThreadId) (*Workflo
 				Action: newActionPbFromDb(&w.Action),
 				Done:   w.Done,
 			}
+			if w.Error != "" {
+				res.Error = &w.Error
+			}
 
 			return res
 		}),

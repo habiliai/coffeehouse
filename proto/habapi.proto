@@ -33,6 +33,7 @@ message ThreadStatus {
 message ActionWork {
   bool done = 1;
   Action action = 2;
+  optional string error = 3;
 }
 
 message AgentWork {
