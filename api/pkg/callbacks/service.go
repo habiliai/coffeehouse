@@ -31,6 +31,6 @@ func NewService(config *config.HabApiConfig) Service {
 
 func init() {
 	digo.Register(ServiceKey, func(container *digo.Container) (any, error) {
-		return &service{}, nil
+		return NewService(container.Config), nil
 	})
 }

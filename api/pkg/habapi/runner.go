@@ -2,17 +2,41 @@ package habapi
 
 import (
 	"context"
+	_ "embed"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	haberrors "github.com/habiliai/habiliai/api/pkg/errors"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
+	"github.com/mokiat/gog"
 	"github.com/openai/openai-go"
 	"github.com/pkg/errors"
 	"slices"
+	"strings"
+	"text/template"
 	"time"
 )
 
 type runRequest struct {
 	threadId uint
+}
+
+type AdditionalInstructionValues struct {
+	TodayDate string
+	TodayDay  string
+}
+
+var (
+	//go:embed data/instructions/thread.additional_instruction.md.tmpl
+	additionalInstructions string
+
+	additionalInstructionsTemplate = template.Must(template.New("thread_additional_instructions").Funcs(sprig.FuncMap()).Parse(additionalInstructions))
+)
+
+func newAdditionalInstructionValues() *AdditionalInstructionValues {
+	return &AdditionalInstructionValues{
+		TodayDate: time.Now().Format("2006-01-02"),
+		TodayDay:  time.Now().Format("Monday"),
+	}
 }
 
 func (s *server) run(ctx context.Context, threadId uint) error {
@@ -41,7 +65,7 @@ func (s *server) doRunner(ctx context.Context, workerName string) {
 				}
 				logger.Debug("doRunner request", "req", req)
 				if err := s.runnerMain(ctx, req); err != nil {
-					logger.Warn("failed to doRunner step", "err", err)
+					logger.Warn("failed to doRunner step", "err", err, "thread_id", req.threadId)
 				}
 			}
 		}
@@ -58,14 +82,9 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 	tx := s.db.WithContext(ctx)
 	ctx = helpers.WithTx(ctx, tx)
 
-	var thread domain.Thread
-	if err := tx.
-		Preload("Mission").
-		Preload("Mission.Steps").
-		Preload("Mission.Steps.Actions").
-		Preload("Mission.Steps.Actions.Agent").
-		First(&thread, req.threadId).Error; err != nil {
-		return errors.Wrapf(err, "failed to find thread with id %d", req.threadId)
+	_, thread, err := s.getThread(ctx, int32(req.threadId))
+	if err != nil {
+		return err
 	}
 
 	step, err := thread.GetCurrentStep()
@@ -111,13 +130,63 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 
 	logger.Debug("step actions", "actions", step.Actions)
 
-	var run *openai.Run
+	type WorkingTarget struct {
+		agent  *domain.Agent
+		action *domain.Action
+	}
+	var workingTargets []WorkingTarget
 	for _, action := range step.Actions {
+		for _, agent := range agents {
+			if action.AgentID == agent.ID {
+				workingTargets = append(workingTargets, WorkingTarget{
+					agent:  agent,
+					action: &action,
+				})
+			}
+		}
+	}
+
+	if err := tx.Model(&domain.ActionWork{}).
+		Where(
+			"thread_id = ? AND action_id IN ?",
+			thread.ID,
+			gog.Map(workingTargets, func(w WorkingTarget) uint {
+				return w.action.ID
+			}),
+		).
+		Update("error", "").Error; err != nil {
+		return errors.Wrapf(err, "failed to update action work")
+	}
+
+	if err := tx.Model(&domain.AgentWork{}).
+		Where(
+			"thread_id = ? AND agent_id IN ?",
+			thread.ID,
+			gog.Map(workingTargets, func(w WorkingTarget) uint {
+				return w.agent.ID
+			}),
+		).
+		Update("status", domain.AgentStatusWorking).Error; err != nil {
+		return errors.Wrapf(err, "failed to update agent work")
+	}
+
+	var run *openai.Run
+	for _, wt := range workingTargets {
+		action := wt.action
+		agent := wt.agent
+
+		logger.Info("start running llm", "action", action.Subject, "agent", agent.Name)
+		var additionalInstructionsStr strings.Builder
+		if err := additionalInstructionsTemplate.Execute(&additionalInstructionsStr, newAdditionalInstructionValues()); err != nil {
+			return errors.Wrapf(err, "failed to execute additional instructions template")
+		}
+
 		run, err = s.openai.Beta.Threads.Runs.New(ctx, thread.OpenaiThreadId, openai.BetaThreadRunNewParams{
-			AssistantID: openai.F(action.Agent.AssistantId),
+			AssistantID:            openai.F(agent.AssistantId),
+			AdditionalInstructions: openai.F(additionalInstructionsStr.String()),
 		})
 		if err != nil {
-			return errors.Wrapf(err, "failed to doRunner thread")
+			return errors.Wrapf(err, "failed to doRunner thread, action: %s, agent: %s", action.Subject, agent.Name)
 		}
 
 		var actionWork domain.ActionWork
@@ -125,19 +194,9 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 			return errors.Wrapf(err, "failed to find action work")
 		}
 
-		actionWork.Error = ""
-		if err := actionWork.Save(tx); err != nil {
-			return err
-		}
-
 		var agentWork domain.AgentWork
-		if err := tx.Preload("Agent").First(&agentWork, "agent_id = ? AND thread_id = ?", action.Agent.ID, thread.ID).Error; err != nil {
+		if err := tx.Preload("Agent").First(&agentWork, "agent_id = ? AND thread_id = ?", agent.ID, thread.ID).Error; err != nil {
 			return errors.Wrapf(err, "failed to find agent work")
-		}
-
-		agentWork.Status = domain.AgentStatusWorking
-		if err := agentWork.Save(tx); err != nil {
-			return err
 		}
 
 		if err := func() error {
@@ -176,11 +235,13 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 				case openai.RunStatusCancelled:
 					return errors.Wrapf(haberrors.ErrRuntime, "Run cancelled")
 				case openai.RunStatusRequiresAction:
-					run, err = s.requiresCallback(ctx, run, &thread, &actionWork, &agentWork)
+					newRun, err := s.requiresCallback(ctx, run, thread, &actionWork, &agentWork)
 					if err != nil {
-						return err
+						logger.Warn("failed to requiresCallback", "err", err)
 					}
-					return nil
+					if newRun != nil {
+						run = newRun
+					}
 				default:
 					return errors.Wrapf(haberrors.ErrBadRequest, "invalid thread doRunner status: received %s", run.Status)
 				}
@@ -188,12 +249,14 @@ func (s *server) runnerMain(ctx context.Context, req runRequest) error {
 
 			return nil
 		}(); err != nil {
-			logger.Warn("failed to doRunner step", "err", err, "agent", action.Agent.Name)
+			logger.Warn("failed to doRunner step", "err", err, "agent", agent.Name)
 			actionWork.Error = err.Error()
 			if err := actionWork.Save(tx); err != nil {
 				return err
 			}
+			s.openai.Beta.Threads.Runs.Cancel(ctx, thread.OpenaiThreadId, run.ID)
 		}
+		time.Sleep(250 * time.Millisecond)
 	}
 
 	eventListener.Emit(ctx, helpers.EventTypeCompletedAction)

@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // GeoResponse는 OpenWeatherMap Geocoding API 응답 구조체
@@ -130,24 +131,28 @@ func GetWeather(s *service, ctx context.Context, args []byte, metadata Metadata)
 	var req struct {
 		Location string `json:"location"`
 		Date     string `json:"date"`
-		Unit     string `json:"unit"`
 	}
 
 	if err := json.Unmarshal(args, &req); err != nil {
 		return nil, errors.WithStack(err)
 	}
 
+	if strings.Contains(req.Location, "HKCEC") {
+		req.Location = "HK"
+	}
+	logger.Debug("get_weather", "location", req.Location, "date", req.Date)
+
 	latitude, longitude, err := getCoordinates(s.config.OpenWeatherApiKey, req.Location)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to convert coordinates")
 	}
 
-	weatherSummary, err := getWeatherSummary(s.config.OpenWeatherApiKey, req.Date, latitude, longitude, req.Unit, "en")
+	weatherSummary, err := getWeatherSummary(s.config.OpenWeatherApiKey, req.Date, latitude, longitude, "metric", "en")
 	if err != nil {
 		return nil, errors.Wrapf(err, "error occurred while fetching weather information")
 	}
 
-	return &weatherSummary, nil
+	return weatherSummary, nil
 }
 
 func init() {

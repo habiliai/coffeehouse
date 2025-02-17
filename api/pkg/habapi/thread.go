@@ -152,7 +152,11 @@ func (s *server) getThread(ctx context.Context, id int32) (*openai.Thread, *doma
 	tx := helpers.GetTx(ctx)
 
 	var thread domain.Thread
-	if err := tx.First(&thread, id).Error; err != nil {
+	if err := tx.Preload("Mission").
+		Preload("Mission.Steps").
+		Preload("Mission.Steps.Actions").
+		Preload("Mission.Steps.Actions.Agent").
+		First(&thread, id).Error; err != nil {
 		return nil, nil, errors.Wrapf(err, "failed to find thread with id %d", id)
 	}
 

@@ -52,7 +52,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			}
 			suggester.Save(db)
 			scheduler := domain.Agent{
-				Name:        "scheduler",
+				Name:        "scheduler1",
 				AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
 				IconUrl:     "https://img.logo.dev/google.com",
 			}
@@ -85,6 +85,99 @@ func (c *cli) newSeedCmd() *cobra.Command {
 							{
 								Subject: "적절한 일정 찾아 신청",
 								Agent:   scheduler,
+							},
+						},
+					},
+				},
+			}
+
+			if err := db.Create(&mission).Error; err != nil {
+				return errors.Wrapf(err, "failed to create mission")
+			}
+
+			weatherForecaster := domain.Agent{
+				Name:        "weather",
+				AssistantId: "asst_Rho49KGmpl1IkiVWtfuNDd4i",
+				IconUrl:     "https://img.logo.dev/twitter.com",
+			}
+			weatherForecaster.Save(db)
+			communityManager := domain.Agent{
+				Name:                  "comm",
+				IconUrl:               "https://img.logo.dev/github.com",
+				IncludeQuestionIntent: true,
+				AssistantId:           "asst_e08WipDCbvGTOVlFxiMjPa10",
+			}
+			communityManager.Save(db)
+			locationRecommender := domain.Agent{
+				Name:                  "loc",
+				IconUrl:               "https://img.logo.dev/facebook.com",
+				AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
+				IncludeQuestionIntent: true,
+			}
+			locationRecommender.Save(db)
+			commentSpecialist := domain.Agent{
+				Name:        "commenter",
+				IconUrl:     "https://img.logo.dev/google.com",
+				AssistantId: "asst_Duu1WXwmYwPokx3n3JYIVvRo",
+			}
+			commentSpecialist.Save(db)
+			scheduleManager := domain.Agent{
+				Name:        "scheduler2",
+				IconUrl:     "https://img.logo.dev/whatsapp.com",
+				AssistantId: "asst_jLfJ39wLvYRKiy21Iirq6fIl",
+			}
+			scheduleManager.Save(db)
+			snsManager := domain.Agent{
+				Name:        "sns",
+				IconUrl:     "https://img.logo.dev/instagram.com",
+				AssistantId: "asst_OjOnv01dbmaGMa200m9bkDpm",
+			}
+			snsManager.Save(db)
+
+			mission = domain.Mission{
+				Name: "Organize a community meal gathering near Hong Kong CEC this weekend.",
+				Steps: []domain.Step{
+					{
+						SeqNo: 1,
+						Actions: []domain.Action{
+							{
+								AgentID: weatherForecaster.ID,
+								Subject: "Check the weather forecast for this weekend",
+							},
+							{
+								AgentID: communityManager.ID,
+								Subject: "Find a suitable location for the gathering",
+							},
+						},
+					},
+					{
+						SeqNo: 2,
+						Actions: []domain.Action{
+							{
+								AgentID: locationRecommender.ID,
+								Subject: "Recommend a meeting place",
+							},
+						},
+					},
+					{
+						SeqNo: 3,
+						Actions: []domain.Action{
+							{
+								AgentID: commentSpecialist.ID,
+								Subject: "Write a comment to invite people",
+							},
+						},
+					},
+					{
+						SeqNo: 4,
+						Actions: []domain.Action{
+							{
+								AgentID: scheduleManager.ID,
+								Subject: "Schedule the gathering",
+							},
+							{
+								AgentID: snsManager.ID,
+								Subject: "Post the event on X",
 							},
 						},
 					},

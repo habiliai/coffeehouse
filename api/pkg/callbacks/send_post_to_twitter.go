@@ -23,5 +23,5 @@ func SendPostToTwitter(s *service, ctx context.Context, args []byte, metadata Me
 }
 
 func init() {
-	dispatchFunctions["send_post_to_twitter"] = SendPostToTwitter
+	dispatchFunctions["post_to_twitter"] = SendPostToTwitter
 }

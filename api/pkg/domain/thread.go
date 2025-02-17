@@ -16,6 +16,7 @@ type Thread struct {
 	Mission   Mission `gorm:"foreignKey:MissionID"`
 
 	CurrentStepSeqNo int
+	AllDone          bool
 
 	Memory []byte
 }

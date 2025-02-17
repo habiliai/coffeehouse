@@ -18,50 +18,60 @@ func (s *server) requiresCallback(ctx context.Context, run *openai.Run, thread *
 		return nil, errors.Errorf("no tool calls found")
 	}
 
-	toolCall := run.RequiredAction.SubmitToolOutputs.ToolCalls[0]
+	outputs := make([]openai.BetaThreadRunSubmitToolOutputsParamsToolOutput, 0, len(run.RequiredAction.SubmitToolOutputs.ToolCalls))
 
-	var (
-		err    error
-		output struct {
-			Success bool   `json:"success"`
-			Reason  string `json:"reason,omitempty"`
-			Result  any    `json:"result.omitempty"`
+	for _, toolCall := range run.RequiredAction.SubmitToolOutputs.ToolCalls {
+		var (
+			err    error
+			output struct {
+				Success bool   `json:"success"`
+				Reason  string `json:"reason,omitempty"`
+				Result  any    `json:"result.omitempty"`
+			}
+		)
+
+		var outputErr error
+		switch strings.ToLower(toolCall.Function.Name) {
+		case "done_agent": // this special case is used to mark the agent as idle
+			output.Result, outputErr = s.doneAgent(ctx, thread, agentWork, actionWork)
+		default:
+			metadata := callbacks.Metadata{
+				AgentWork:  agentWork,
+				ActionWork: actionWork,
+			}
+			output.Result, outputErr = s.actionService.Dispatch(ctx, toolCall.Function.Name, []byte(toolCall.Function.Arguments), metadata)
 		}
-	)
-	var outputErr error
-	switch strings.ToLower(toolCall.Function.Name) {
-	case "done_agent": // this special case is used to mark the agent as idle
-		output.Result, outputErr = s.doneAgent(ctx, thread, agentWork, actionWork)
-	default:
-		metadata := callbacks.Metadata{
-			AgentWork:  agentWork,
-			ActionWork: actionWork,
+
+		if outputErr != nil {
+			output.Success = false
+			output.Reason = outputErr.Error()
+			logger.Warn("caused by callback", "name", toolCall.Function.Name, "err", outputErr)
+		} else {
+			output.Success = true
+			output.Reason = ""
 		}
-		output.Result, outputErr = s.actionService.Dispatch(ctx, toolCall.Function.Name, []byte(toolCall.Function.Arguments), metadata)
+
+		outputJson, err := json.Marshal(output)
+		if err != nil {
+			logger.Warn("failed to marshal output", "error", err)
+		}
+
+		toolOutput := openai.BetaThreadRunSubmitToolOutputsParamsToolOutput{
+			ToolCallID: openai.F(toolCall.ID),
+			Output:     openai.F(string(outputJson)),
+		}
+
+		outputs = append(outputs, toolOutput)
 	}
 
-	if outputErr != nil {
-		output.Success = false
-		output.Reason = outputErr.Error()
-	} else {
-		output.Success = true
-		output.Reason = ""
-	}
-
-	outputJson, err := json.Marshal(output)
-	if err != nil {
-		logger.Warn("failed to marshal output", "error", err)
-	}
 	toolCallRun, err := s.openai.Beta.Threads.Runs.SubmitToolOutputs(ctx, run.ThreadID, run.ID, openai.BetaThreadRunSubmitToolOutputsParams{
-		ToolOutputs: openai.F([]openai.BetaThreadRunSubmitToolOutputsParamsToolOutput{
-			{
-				ToolCallID: openai.F(toolCall.ID),
-				Output:     openai.F(string(outputJson)),
-			},
-		}),
+		ToolOutputs: openai.F(outputs),
 	})
+	if err != nil {
+		logger.Warn("failed to submit tool outputs", "error", err)
+	}
 
-	return toolCallRun, outputErr
+	return toolCallRun, nil
 }
 
 func (s *server) doneAgent(
@@ -101,11 +111,15 @@ func (s *server) doneAgent(
 	if allDone := gog.Reduce(allActionWorks, true, func(acc bool, actionWork domain.ActionWork) bool {
 		return acc && actionWork.Done
 	}); !allDone {
+		logger.Debug("not done step", "seq_no", thread.CurrentStepSeqNo)
 		return nil, nil
 	}
 
 	nextStepSeqNo := thread.CurrentStepSeqNo + 1
-	isDone := nextStepSeqNo == len(thread.Mission.Steps)
+	if len(thread.Mission.Steps) == 0 {
+		return nil, errors.Errorf("no steps found")
+	}
+	isDone := nextStepSeqNo == thread.Mission.Steps[len(thread.Mission.Steps)-1].SeqNo+1
 	hasNextStep := false
 	for _, step := range thread.Mission.Steps {
 		if step.SeqNo == nextStepSeqNo {
@@ -118,6 +132,7 @@ func (s *server) doneAgent(
 	}
 
 	thread.CurrentStepSeqNo = nextStepSeqNo
+	thread.AllDone = isDone
 	if err := thread.Save(tx); err != nil {
 		return nil, err
 	}

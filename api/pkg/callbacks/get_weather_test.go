@@ -2,7 +2,6 @@ package callbacks_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/habiliai/habiliai/api/pkg/callbacks"
 	"github.com/habiliai/habiliai/api/pkg/config"
@@ -19,15 +18,15 @@ func TestGetWeather(t *testing.T) {
 
 	s := callbacks.NewService(&config.HabApiConfig{OpenWeatherApiKey: apiKey})
 	contents, err := s.Dispatch(context.TODO(), "get_weather", []byte(`{
-"location": "Seoul",
-"date": "2025-02-10",
-"unit": "metric"
+"location": "HK",
+"date": "2025-02-22"
 }`), callbacks.Metadata{})
 
 	require.NoError(t, err)
 
-	var weatherSummary callbacks.WeatherSummaryResponse
-	require.NoError(t, json.Unmarshal(contents, &weatherSummary))
+	t.Logf("contents: %v", contents)
+	weatherSummary, ok := contents.(*callbacks.WeatherSummaryResponse)
+	require.True(t, ok)
 
 	// 3. 출력
 	fmt.Printf("🕒 시간대: %s\n", weatherSummary.Timezone)
