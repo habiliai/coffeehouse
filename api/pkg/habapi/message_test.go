@@ -1,8 +1,9 @@
 package habapi_test
 
 import (
-	"github.com/habiliai/habiliai/api/pkg/domain"
+	domaintest "github.com/habiliai/habiliai/api/pkg/domain/testing"
 	"github.com/habiliai/habiliai/api/pkg/habapi"
+	"github.com/mokiat/gog"
 	"os"
 )
 
@@ -11,13 +12,13 @@ func (s *HabApiTestSuite) TestAddMessage() {
 		s.T().Skip("OPENAI_API_KEY is not set")
 	}
 
-	seed, err := domain.SeedForTest(s.db)
+	err := domaintest.SeedForTest(s.db)
 	s.Require().NoError(err)
 
 	threadId, err := s.client.CreateThread(
 		s,
 		&habapi.CreateThreadRequest{
-			MissionId: int32(seed.Missions[0].ID),
+			MissionId: int32(1),
 		},
 	)
 	s.Require().NoError(err)
@@ -29,7 +30,7 @@ func (s *HabApiTestSuite) TestAddMessage() {
 			s,
 			&habapi.AddMessageRequest{
 				ThreadId: thread.Id,
-				Message:  "@engineer hello.",
+				Message:  gog.PtrOf("@engineer hello."),
 			},
 		)
 		s.Require().NoError(err)

@@ -2,6 +2,7 @@ package habapi_test
 
 import (
 	"github.com/habiliai/habiliai/api/pkg/domain"
+	domaintest "github.com/habiliai/habiliai/api/pkg/domain/testing"
 	"github.com/habiliai/habiliai/api/pkg/habapi"
 	"os"
 )
@@ -11,7 +12,7 @@ func (s *HabApiTestSuite) TestGivenOneThreadWhenGetThreadShouldBeOK() {
 		s.T().Skip("OPENAI_API_KEY is not set")
 	}
 
-	seed, err := domain.SeedForTest(s.db)
+	err := domaintest.SeedForTest(s.db)
 	s.Require().NoError(err)
 
 	mission := domain.Mission{}
@@ -19,7 +20,7 @@ func (s *HabApiTestSuite) TestGivenOneThreadWhenGetThreadShouldBeOK() {
 
 	// Create thread by first seed's mission
 	threadId, err := s.client.CreateThread(s.Context, &habapi.CreateThreadRequest{
-		MissionId: int32(seed.Missions[0].ID),
+		MissionId: int32(1),
 	})
 	s.Require().NoError(err)
 

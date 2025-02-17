@@ -65,13 +65,13 @@ func (s *server) GetMissionStepStatus(ctx context.Context, req *GetMissionStepSt
 
 	var works []domain.ActionWork
 	if err := helpers.GetTx(ctx).
-		Preload("Action").
+		InnerJoins("Action").
+		InnerJoins("Action.Step", tx.Where("\"Action__Step\".seq_no = ? AND \"Action__Step\".mission_id = ?", thread.CurrentStepSeqNo, thread.MissionID)).
 		Preload("Action.Agent").
-		Preload("Action.Step").
 		Find(
 			&works,
-			"thread_id = ? AND Action__Step.seq_no = ? AND Action.mission_id = ?",
-			thread.ID, thread.CurrentStepSeqNo, thread.MissionID,
+			"thread_id = ?",
+			thread.ID,
 		).Error; err != nil {
 		return nil, errors.Wrapf(err, "failed to find action works")
 	}

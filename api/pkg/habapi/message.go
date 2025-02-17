@@ -15,7 +15,7 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 	tx := helpers.GetTx(ctx)
 	_, thread, err := s.getThread(ctx, req.ThreadId)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to get thread with id %s", req.ThreadId)
+		return nil, errors.Wrapf(err, "failed to get thread with id %d", req.ThreadId)
 	}
 
 	if req.Message == nil || *req.Message == "" {

@@ -2,84 +2,159 @@ package domaintest
 
 import (
 	"github.com/habiliai/habiliai/api/pkg/domain"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
-type Seed struct {
-	Agents   []*domain.Agent
-	Missions []*domain.Mission
-	Tasks    []*domain.Task
-}
+func SeedForTest(db *gorm.DB) (err error) {
+	moderator := domain.Agent{
+		Name:                  "moderator",
+		AssistantId:           "asst_aggf9nmtEM77Qy3niFq64uBK",
+		IconUrl:               "https://img.logo.dev/github.com",
+		IncludeQuestionIntent: true,
+	}
+	moderator.Save(db)
+	suggester := domain.Agent{
+		Name:        "suggester",
+		AssistantId: "asst_YHXPoVMv8oD3kzBO2xO8jIxL",
+		IconUrl:     "https://img.logo.dev/facebook.com",
+	}
+	suggester.Save(db)
+	scheduler := domain.Agent{
+		Name:        "scheduler1",
+		AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
+		IconUrl:     "https://img.logo.dev/google.com",
+	}
+	scheduler.Save(db)
 
-func SeedForTest(tx *gorm.DB) (r Seed, err error) {
-	mission := &domain.Mission{
-		Name: "Mission 1",
-	}
-	if err := mission.Save(tx); err != nil {
-		logger.Warn("failed to save mission")
-	}
-	r.Missions = append(r.Missions, mission)
-
-	r.Tasks = []*domain.Task{
-		{
-			SeqNo:     1,
-			MissionID: mission.ID,
-		},
-		{
-			SeqNo:     2,
-			MissionID: mission.ID,
-		},
-		{
-			SeqNo:     3,
-			MissionID: mission.ID,
-		},
-		{
-			SeqNo:     4,
-			MissionID: mission.ID,
-		},
-		{
-			SeqNo:     5,
-			MissionID: mission.ID,
-		},
-	}
-	for _, task := range r.Tasks {
-		if err := task.Save(tx); err != nil {
-			logger.Warn("failed to save task")
-		}
-	}
-
-	r.Agents = []*domain.Agent{
-		{
-			Name:        "engineer",
-			AssistantId: "asst_1Ov3IAylZU7Z9ansD7ZBWufs",
-			IconUrl:     "https://img.logo.dev/github.com",
-			Missions: []Mission{
-				*r.Missions[0],
+	mission := domain.Mission{
+		Name: "컨퍼런스 일정 중에 갈만한 것을 예약해줘",
+		Steps: []domain.Step{
+			{
+				SeqNo: 1,
+				Actions: []domain.Action{
+					{
+						Subject: "니즈 파악(추천 키워드 선택지 제안)",
+						Agent:   moderator,
+					},
+				},
 			},
-		},
-		{
-			Name:        "designer",
-			AssistantId: "asst_1Ov3IAylZU7Z9ansD7ZBWufs",
-			IconUrl:     "https://img.logo.dev/facebook.com",
-			Missions: []Mission{
-				*r.Missions[0],
+			{
+				SeqNo: 2,
+				Actions: []domain.Action{
+					{
+						Subject: "일정, 이벤트 추천",
+						Agent:   suggester,
+					},
+				},
 			},
-		},
-		{
-			Name:        "manager",
-			AssistantId: "asst_1Ov3IAylZU7Z9ansD7ZBWufs",
-			IconUrl:     "https://img.logo.dev/netflix.com",
-			Missions: []Mission{
-				*r.Missions[0],
+			{
+				SeqNo: 3,
+				Actions: []domain.Action{
+					{
+						Subject: "적절한 일정 찾아 신청",
+						Agent:   scheduler,
+					},
+				},
 			},
 		},
 	}
 
-	for _, agent := range r.Agents {
-		if err := agent.Save(tx); err != nil {
-			logger.Warn("failed to save agent")
-		}
+	if err := db.Create(&mission).Error; err != nil {
+		return errors.WithStack(err)
+	}
+
+	weatherForecaster := domain.Agent{
+		Name:        "weather",
+		AssistantId: "asst_Rho49KGmpl1IkiVWtfuNDd4i",
+		IconUrl:     "https://img.logo.dev/twitter.com",
+	}
+	weatherForecaster.Save(db)
+	communityManager := domain.Agent{
+		Name:                  "comm",
+		IconUrl:               "https://img.logo.dev/github.com",
+		IncludeQuestionIntent: true,
+		AssistantId:           "asst_e08WipDCbvGTOVlFxiMjPa10",
+	}
+	communityManager.Save(db)
+	locationRecommender := domain.Agent{
+		Name:                  "loc",
+		IconUrl:               "https://img.logo.dev/facebook.com",
+		AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
+		IncludeQuestionIntent: true,
+	}
+	locationRecommender.Save(db)
+	commentSpecialist := domain.Agent{
+		Name:        "commenter",
+		IconUrl:     "https://img.logo.dev/google.com",
+		AssistantId: "asst_Duu1WXwmYwPokx3n3JYIVvRo",
+	}
+	commentSpecialist.Save(db)
+	scheduleManager := domain.Agent{
+		Name:        "scheduler2",
+		IconUrl:     "https://img.logo.dev/whatsapp.com",
+		AssistantId: "asst_jLfJ39wLvYRKiy21Iirq6fIl",
+	}
+	scheduleManager.Save(db)
+	snsManager := domain.Agent{
+		Name:        "sns",
+		IconUrl:     "https://img.logo.dev/instagram.com",
+		AssistantId: "asst_OjOnv01dbmaGMa200m9bkDpm",
+	}
+	snsManager.Save(db)
+
+	mission = domain.Mission{
+		Name: "Organize a community meal gathering near Hong Kong CEC this weekend.",
+		Steps: []domain.Step{
+			{
+				SeqNo: 1,
+				Actions: []domain.Action{
+					{
+						AgentID: weatherForecaster.ID,
+						Subject: "Check the weather forecast for this weekend",
+					},
+					{
+						AgentID: communityManager.ID,
+						Subject: "Find a suitable location for the gathering",
+					},
+				},
+			},
+			{
+				SeqNo: 2,
+				Actions: []domain.Action{
+					{
+						AgentID: locationRecommender.ID,
+						Subject: "Recommend a meeting place",
+					},
+				},
+			},
+			{
+				SeqNo: 3,
+				Actions: []domain.Action{
+					{
+						AgentID: commentSpecialist.ID,
+						Subject: "Write a comment to invite people",
+					},
+				},
+			},
+			{
+				SeqNo: 4,
+				Actions: []domain.Action{
+					{
+						AgentID: scheduleManager.ID,
+						Subject: "Schedule the gathering",
+					},
+					{
+						AgentID: snsManager.ID,
+						Subject: "Post the event on X",
+					},
+				},
+			},
+		},
+	}
+
+	if err := db.Create(&mission).Error; err != nil {
+		return errors.WithStack(err)
 	}
 
 	return
