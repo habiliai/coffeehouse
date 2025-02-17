@@ -26,7 +26,7 @@ type AdditionalInstructionValues struct {
 }
 
 var (
-	//go:embed data/instructions/thread.additional_instruction.md.tmpl
+	//go:embed data/instructions/thread.additional_info.md.tmpl
 	additionalInstructions string
 
 	additionalInstructionsTemplate = template.Must(template.New("thread_additional_instructions").Funcs(sprig.FuncMap()).Parse(additionalInstructions))

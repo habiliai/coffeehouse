@@ -41,6 +41,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				Name:                  "moderator",
 				AssistantId:           "asst_aggf9nmtEM77Qy3niFq64uBK",
 				IconUrl:               "https://img.logo.dev/github.com",
+				Role:                  "Identify the user’s needs and propose recommended keywords as options.",
 				IncludeQuestionIntent: true,
 			}
 			moderator.Save(db)
@@ -48,12 +49,14 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				Name:        "suggester",
 				AssistantId: "asst_YHXPoVMv8oD3kzBO2xO8jIxL",
 				IconUrl:     "https://img.logo.dev/facebook.com",
+				Role:        "The AI serves as a conference manager that recommends relevant schedules and events based on user interests, providing easily selectable options for registration and applications.",
 			}
 			suggester.Save(db)
 			scheduler := domain.Agent{
 				Name:        "scheduler1",
 				AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
 				IconUrl:     "https://img.logo.dev/google.com",
+				Role:        "The AI acts as a schedule manager that identifies suitable events from the user’s calendar availability and, upon confirmation, automatically registers the chosen schedule.",
 			}
 			scheduler.Save(db)
 
@@ -105,6 +108,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				IconUrl:               "https://img.logo.dev/github.com",
 				IncludeQuestionIntent: true,
 				AssistantId:           "asst_e08WipDCbvGTOVlFxiMjPa10",
+				Role:                  "The AI acts as a weather forecaster, checking the upcoming weekend weather at the specified location (e.g., HKCEC) using OpenWeatherMap to recommend suitable dates.",
 			}
 			communityManager.Save(db)
 			locationRecommender := domain.Agent{
@@ -112,24 +116,28 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				IconUrl:               "https://img.logo.dev/facebook.com",
 				AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
 				IncludeQuestionIntent: true,
+				Role:                  "The AI acts as a community manager that identifies a user’s food preferences via LLM-based interactions and provides an explanatory summary of their tastes.",
 			}
 			locationRecommender.Save(db)
 			commentSpecialist := domain.Agent{
 				Name:        "commenter",
 				IconUrl:     "https://img.logo.dev/google.com",
 				AssistantId: "asst_Duu1WXwmYwPokx3n3JYIVvRo",
+				Role:        "The AI serves as a location manager that retrieves open place listings from a predefined database and recommends suitable venues based on user preferences, including details such as addresses, tags, ratings, and corresponding map links.",
 			}
 			commentSpecialist.Save(db)
 			scheduleManager := domain.Agent{
 				Name:        "scheduler2",
 				IconUrl:     "https://img.logo.dev/whatsapp.com",
 				AssistantId: "asst_jLfJ39wLvYRKiy21Iirq6fIl",
+				Role:        "The AI functions as a ‘message specialist’ that crafts romantically-toned yet professional inquiries for business contacts, seamlessly incorporating schedule, time, location, and weather details into the message.",
 			}
 			scheduleManager.Save(db)
 			snsManager := domain.Agent{
 				Name:        "sns",
 				IconUrl:     "https://img.logo.dev/instagram.com",
 				AssistantId: "asst_OjOnv01dbmaGMa200m9bkDpm",
+				Role:        "The AI acts as a schedule manager that confirms and registers event details in the user’s calendar, then provides a prompt confirmation of the successful addition.",
 			}
 			snsManager.Save(db)
 

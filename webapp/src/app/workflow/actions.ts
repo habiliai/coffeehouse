@@ -160,3 +160,33 @@ export function useGetStatus({
     },
   });
 }
+
+export function useSummarizeThread() {
+  const habapi = useHabiliApiClient();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['server.summarize', { habapi }] as const,
+    mutationFn: async ({ threadId }: { threadId: number | null }) => {
+      try {
+        if (!threadId) {
+          throw new Error('Thread not found');
+        }
+
+        await habapi
+          .summarizeThread(new ThreadId().setId(threadId))
+          .then((r) => r.toObject());
+
+        return null;
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+    },
+    onError: (err) => {
+      console.error(err);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['server.getThread']})
+    },
+  });
+}

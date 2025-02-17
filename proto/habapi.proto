@@ -19,6 +19,7 @@ service HabiliApi {
   rpc GetMissionStepStatus(GetMissionStepStatusRequest) returns (MissionStepStatus);
   rpc GetAgentsStatus(ThreadId) returns (AgentsStatus);
   rpc GetThreadStatus(GetThreadStatusRequest) returns (ThreadStatus);
+  rpc SummarizeThread(ThreadId) returns (google.protobuf.Empty);
 }
 
 message MissionStepStatus {
@@ -86,6 +87,7 @@ message Thread {
   repeated Message messages = 2;
   int32 mission_id = 3;
   int32 current_step_seq_no = 4;
+  string summary = 5;
 }
 
 message AgentMessageContent {
@@ -128,16 +130,10 @@ message CreateThreadRequest {
 }
 
 message Agent {
-  enum Status {
-    UNSPECIFIED = 0;
-    WORKING = 1;
-    IDLE = 2;
-    WAITING = 3;
-  }
   string name = 1;
   string icon_url = 2;
   int32 id = 3;
-  Status status = 4;
+  string role = 5;
 }
 
 message GetAgentsResponse {

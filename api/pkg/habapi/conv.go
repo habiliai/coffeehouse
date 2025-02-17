@@ -42,6 +42,7 @@ func newAgentPbFromDb(agent *domain.Agent) *Agent {
 		Id:      int32(agent.ID),
 		Name:    agent.Name,
 		IconUrl: agent.IconUrl,
+		Role:    agent.Role,
 	}
 }
 

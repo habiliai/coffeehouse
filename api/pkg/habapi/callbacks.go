@@ -146,6 +146,13 @@ func (s *server) doneAgent(
 				logger.Error("failed to run thread", "thread_id", thread.ID, "error", err)
 			}
 		})
+	} else if thread.AllDone {
+		logger.Info("done mission", "thread_id", thread.ID)
+		helpers.On(ctx, helpers.EventTypeCompletedAction, func(ctx context.Context) {
+			if err := s.summarizeThread(ctx, thread.ID); err != nil {
+				logger.Error("failed to summarize thread", "thread_id", thread.ID, "error", err)
+			}
+		})
 	}
 
 	return nil, nil

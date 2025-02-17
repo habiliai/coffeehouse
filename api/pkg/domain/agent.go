@@ -11,6 +11,7 @@ type Agent struct {
 	Name        string `gorm:"index:idx_agent_name,unique,where=deleted_at IS NULL"`
 	AssistantId string
 	IconUrl     string
+	Role        string
 
 	IncludeQuestionIntent bool
 }

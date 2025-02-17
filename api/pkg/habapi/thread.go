@@ -114,6 +114,7 @@ func (s *server) GetThread(ctx context.Context, req *ThreadId) (*Thread, error) 
 		Id:               int32(thread.ID),
 		MissionId:        int32(thread.MissionID),
 		CurrentStepSeqNo: int32(thread.CurrentStepSeqNo),
+		Summary:          thread.Summary,
 	}
 
 	res.Messages, err = s.getAllMessages(ctx, openaiThread.ID)

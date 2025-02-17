@@ -18,7 +18,7 @@ type Thread struct {
 	CurrentStepSeqNo int `gorm:"index:idx_mission_id_current_step_seq_no_uniq,unique,where=deleted_at IS NULL"`
 	AllDone          bool
 
-	Memory []byte
+	Summary string
 }
 
 func (t *Thread) Save(db *gorm.DB) error {
