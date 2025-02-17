@@ -52,7 +52,15 @@ services:
       DB_MAX_IDLE_CONNS: 10
       DB_MAX_OPEN_CONNS: 100
       DB_CONN_MAX_LIFETIME: 1h
-      OPENAI_API_KEY: ""
+      # OpenAI API Config
+      OPENAI_API_KEY:
+      # OpenWeather API key
+      OPENWEATHER_API_KEY:
+      # Twitter API Keys
+      TWITTER_CONSUMER_KEY:
+      TWITTER_CONSUMER_SECRET:
+      TWITTER_ACCESS_TOKEN:
+      TWITTER_ACCESS_TOKEN_SECRET:
     links:
       - postgres:postgres.local
     depends_on:
