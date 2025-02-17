@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
+	"github.com/mokiat/gog"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm/clause"
@@ -53,4 +54,46 @@ func (s *server) GetMission(ctx context.Context, req *MissionId) (*Mission, erro
 	}
 
 	return newMissionPbFromDb(&mission), nil
+}
+
+func (s *server) GetMissionStepStatus(ctx context.Context, req *GetMissionStepStatusRequest) (*MissionStepStatus, error) {
+	tx := helpers.GetTx(ctx)
+	_, thread, err := s.getThread(ctx, req.ThreadId)
+	if err != nil {
+		return nil, err
+	}
+
+	var works []domain.ActionWork
+	if err := helpers.GetTx(ctx).
+		Preload("Action").
+		Preload("Action.Agent").
+		Preload("Action.Step").
+		Find(
+			&works,
+			"thread_id = ? AND Action__Step.seq_no = ? AND Action.mission_id = ?",
+			thread.ID, thread.CurrentStepSeqNo, thread.MissionID,
+		).Error; err != nil {
+		return nil, errors.Wrapf(err, "failed to find action works")
+	}
+
+	var step domain.Step
+	if err := tx.
+		First(&step, "mission_id = ? AND seq_no = ?", thread.MissionID, thread.CurrentStepSeqNo).Error; err != nil {
+		return nil, errors.Wrapf(err, "failed to find step")
+	}
+
+	return &MissionStepStatus{
+		Step: newStepPbFromDb(&step),
+		ActionWorks: gog.Map(works, func(w domain.ActionWork) *ActionWork {
+			res := &ActionWork{
+				Action: newActionPbFromDb(&w.Action),
+				Done:   w.Done,
+			}
+			if w.Error != "" {
+				res.Error = &w.Error
+			}
+
+			return res
+		}),
+	}, nil
 }

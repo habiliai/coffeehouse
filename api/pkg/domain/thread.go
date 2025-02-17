@@ -12,10 +12,10 @@ type Thread struct {
 	CurrentRunId   string
 	LastMessageId  string
 
-	MissionID uint
+	MissionID uint    `gorm:"index:idx_mission_id_current_step_seq_no_uniq,unique,where=deleted_at IS NULL"`
 	Mission   Mission `gorm:"foreignKey:MissionID"`
 
-	CurrentStepSeqNo int
+	CurrentStepSeqNo int `gorm:"index:idx_mission_id_current_step_seq_no_uniq,unique,where=deleted_at IS NULL"`
 	AllDone          bool
 
 	Memory []byte
