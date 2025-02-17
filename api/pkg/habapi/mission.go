@@ -66,7 +66,7 @@ func (s *server) GetMissionStepStatus(ctx context.Context, req *GetMissionStepSt
 	var works []domain.ActionWork
 	if err := helpers.GetTx(ctx).
 		InnerJoins("Action").
-		InnerJoins("Action.Step", tx.Where("\"Action__Step\".seq_no = ? AND \"Action__Step\".mission_id = ?", thread.CurrentStepSeqNo, thread.MissionID)).
+		InnerJoins("Action.Step", tx.Where("\"Action__Step\".seq_no = ? AND \"Action__Step\".mission_id = ?", req.StepSeqNo, thread.MissionID)).
 		Preload("Action.Agent").
 		Find(
 			&works,
@@ -78,7 +78,7 @@ func (s *server) GetMissionStepStatus(ctx context.Context, req *GetMissionStepSt
 
 	var step domain.Step
 	if err := tx.
-		First(&step, "mission_id = ? AND seq_no = ?", thread.MissionID, thread.CurrentStepSeqNo).Error; err != nil {
+		First(&step, "mission_id = ? AND seq_no = ?", thread.MissionID, req.StepSeqNo).Error; err != nil {
 		return nil, errors.Wrapf(err, "failed to find step")
 	}
 
