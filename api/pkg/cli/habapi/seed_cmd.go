@@ -4,7 +4,6 @@ import (
 	"github.com/habiliai/habiliai/api/pkg/digo"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/services"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
 )
@@ -92,7 +91,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			}
 
 			if err := db.Create(&mission).Error; err != nil {
-				return errors.Wrapf(err, "failed to create mission")
+				logger.Warn("failed to create mission", "err", err)
 			}
 
 			weatherForecaster := domain.Agent{
@@ -185,7 +184,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			}
 
 			if err := db.Create(&mission).Error; err != nil {
-				return errors.Wrapf(err, "failed to create mission")
+				logger.Warn("failed to create mission", "err", err)
 			}
 
 			return nil
