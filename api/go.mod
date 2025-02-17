@@ -5,6 +5,8 @@ go 1.23
 toolchain go1.23.6
 
 require (
+	github.com/Masterminds/sprig/v3 v3.3.0
+	github.com/dghubble/oauth1 v0.7.0
 	github.com/golobby/dotenv v1.3.2
 	github.com/golobby/env/v2 v2.2.4
 	github.com/improbable-eng/grpc-web v0.15.0
@@ -15,6 +17,7 @@ require (
 	github.com/rs/cors v1.11.1
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.10.0
+	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/sync v0.11.0
 	google.golang.org/grpc v1.67.3
 	google.golang.org/protobuf v1.36.5
@@ -26,7 +29,6 @@ require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
-	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
@@ -54,7 +56,6 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
-	go.uber.org/automaxprocs v1.6.0 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect

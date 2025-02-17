@@ -11,6 +11,7 @@ type HabApiConfig struct {
 	LumaApiKey string `env:"LUMA_API_KEY"`
 
 	OpenWeatherApiKey string `env:"OPENWEATHER_API_KEY"`
+	Twitter           TwitterConfig
 }
 
 type OpenAIConfig struct {
