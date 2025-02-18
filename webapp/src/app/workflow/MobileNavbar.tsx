@@ -52,7 +52,7 @@ function MobileViewButton({
           'rounded-[6.25rem] border px-[1.125rem] py-[0.0625rem] text-sm',
           {
             'border-[#4AD15B] bg-[#4AD15B] font-bold text-white': isSelected,
-            'border-[#E5E7EB] font-normal text-black shadow-[0_0_40px_3px_#AEAEAE40]':
+            'border-[#E5E7EB] font-normal text-black shadow-button':
               !isSelected,
           },
         )}

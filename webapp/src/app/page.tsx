@@ -41,9 +41,7 @@ export default function Home() {
     if (!selectedMission || !agents) return;
 
     const matchedAgents = selectedMission.agentIdsList.map(
-      (agentId) =>
-        agents.find((agent) => agent.id === agentId) ??
-        null,
+      (agentId) => agents.find((agent) => agent.id === agentId) ?? null,
     );
     setAgentSlots(matchedAgents);
   }, [agents, selectedMission]);
@@ -58,9 +56,7 @@ export default function Home() {
       .filter((slot) => slot !== null)
       .map((slot) => slot.id);
 
-    return agents.filter(
-      (agent) => !assignedAgentIds.includes(agent.id),
-    );
+    return agents.filter((agent) => !assignedAgentIds.includes(agent.id));
   }, [agents, agentSlots]);
 
   const isLoading = useMemo(() => {
@@ -121,7 +117,10 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <Button className="max-w-80 w-full lg:w-fit" onClick={handleCreateThread}>
+            <Button
+              className="w-full max-w-80 lg:w-fit"
+              onClick={handleCreateThread}
+            >
               Mission Start
             </Button>
           </div>

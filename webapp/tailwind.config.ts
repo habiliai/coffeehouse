@@ -18,6 +18,11 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      boxShadow: {
+        'view': '0 0 40px 3px rgba(174, 174, 174, 0.25)',
+        'card': '0 10px 20px 1px rgba(0, 0, 0, 0.05)',
+        'button': '0 4px 4px 0px rgba(174, 174, 174, 0.25)',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

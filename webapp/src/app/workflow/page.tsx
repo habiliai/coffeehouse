@@ -48,10 +48,7 @@ export default function Page() {
   );
 
   const {
-    data: {
-      initialLoading: isActionWorksLoading,
-      actionWorks,
-    },
+    data: { initialLoading: isActionWorksLoading, actionWorks },
   } = useGetMissionStepStatus({
     threadId,
     selectedSeqNo: nowDisplayedStep,
@@ -117,7 +114,7 @@ export default function Page() {
 
   return (
     <div className="flex w-full flex-row gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem]">
-      <div className="hidden w-full max-w-[8.125rem] flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-[2.375rem] shadow-[0_0_40px_3px_#AEAEAE40] lg:flex">
+      <div className="hidden w-full max-w-[8.125rem] flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-[2.375rem] shadow-view lg:flex">
         <button className="mb-14" onClick={() => router.back()}>
           <ChevronLeft />
         </button>
@@ -127,7 +124,7 @@ export default function Page() {
         <AgentProfileList agentWorks={agentWorks} />
       </div>
 
-      <div className="flex h-full w-full flex-col border border-[#E5E7EB] bg-white shadow-[0_0_40px_3px_#AEAEAE40] lg:max-w-[30.25rem]">
+      <div className="flex h-full w-full flex-col border border-[#E5E7EB] bg-white shadow-view lg:max-w-[30.25rem]">
         <div className="relative flex items-center justify-center px-14 py-5 lg:py-6">
           <button
             className="absolute left-2 flex lg:hidden"
@@ -209,7 +206,7 @@ export default function Page() {
       </div>
 
       <div className="hidden h-screen w-full max-w-[calc(100%-8.125rem-30.25rem)] flex-col items-center gap-[0.875rem] pb-[0.875rem] pt-[0.875rem] lg:flex">
-        <div className="flex max-h-[60%] w-full flex-col overflow-y-auto rounded-[1.25rem] border border-[#E5E7EB] bg-white px-[2.875rem] pb-[2.875rem] pt-8 shadow-[0_0_40px_3px_#AEAEAE40]">
+        <div className="flex max-h-[60%] w-full flex-col overflow-y-auto rounded-[1.25rem] border border-[#E5E7EB] bg-white px-[2.875rem] pb-[2.875rem] pt-8 shadow-card">
           <WorkflowSection
             loading={isActionWorksLoading}
             stepsList={mission?.stepsList ?? []}
@@ -221,7 +218,7 @@ export default function Page() {
         </div>
         <div
           className={classNames(
-            'flex w-full flex-1 rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-[0_0_40px_3px_#AEAEAE40]',
+            'flex w-full flex-1 rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-card',
             {
               'lg:overflow-hidden': resultCollapsed,
             },

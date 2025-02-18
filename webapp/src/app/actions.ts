@@ -1,5 +1,5 @@
 import { useHabiliApiClient } from '@/hooks/habapi';
-import { Agent, CreateThreadRequest, Mission } from '@/proto/habapi';
+import { CreateThreadRequest } from '@/proto/habapi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 

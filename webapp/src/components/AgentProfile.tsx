@@ -43,20 +43,18 @@ function AgentProfile({
               src={imageUrl}
             />
           </div>
-          {(status === AgentWork.Status.IDLE ||
-            status === AgentWork.Status.WAITING) && (
-            <div
-              className={classNames(
-                'absolute -right-[0.125rem] bottom-0 rounded-full border bg-white p-1',
-                {
-                  'border-[#CBD5E1]': status === AgentWork.Status.IDLE,
-                  'border-[#4AD15B]': status === AgentWork.Status.WAITING,
-                },
-              )}
-            >
-              <StatusIcon status={status} />
-            </div>
-          )}
+          <div
+            className={classNames(
+              'absolute -right-[0.125rem] bottom-0 rounded-full border bg-white p-1',
+              {
+                hidden: !status || status === AgentWork.Status.WORKING,
+                'border-[#CBD5E1]': status === AgentWork.Status.IDLE,
+                'border-[#4AD15B]': status === AgentWork.Status.WAITING,
+              },
+            )}
+          >
+            <StatusIcon status={status} />
+          </div>
         </div>
         {label}
 
@@ -76,6 +74,8 @@ function StatusIcon({ status }: { status?: AgentWork.Status }) {
       return <div className="text-[7px]">💤</div>;
     case AgentWork.Status.WAITING:
       return <div className="text-[7px]">❗️</div>;
+    default:
+      return null;
   }
 }
 
