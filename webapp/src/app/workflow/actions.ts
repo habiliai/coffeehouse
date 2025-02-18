@@ -178,7 +178,6 @@ export function useGetMissionStepStatus({
     ] as const,
     initialData: {
       initialLoading: true,
-      currentStepSeqNo: null,
       actionWorks: [],
     },
     queryFn: async ({
@@ -188,7 +187,6 @@ export function useGetMissionStepStatus({
         if (!threadId || !selectedSeqNo) {
           return {
             initialLoading: false,
-            currentStepSeqNo: null,
             actionWorks: [],
           };
         }
@@ -203,7 +201,6 @@ export function useGetMissionStepStatus({
 
         return {
           initialLoading: false,
-          currentStepSeqNo: works.step?.seqNo ?? null,
           actionWorks: works.actionWorksList ?? [],
         };
       } catch (e) {

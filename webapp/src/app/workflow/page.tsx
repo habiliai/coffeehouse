@@ -50,7 +50,6 @@ export default function Page() {
   const {
     data: {
       initialLoading: isActionWorksLoading,
-      currentStepSeqNo,
       actionWorks,
     },
   } = useGetMissionStepStatus({
@@ -174,7 +173,7 @@ export default function Page() {
             loading={isActionWorksLoading}
             stepsList={mission?.stepsList ?? []}
             actionWorks={actionWorks}
-            currentStepSeqNo={currentStepSeqNo ?? 0}
+            currentStepSeqNo={thread?.currentStepSeqNo ?? 0}
             nowDisplayedStep={nowDisplayedStep ?? 0}
             setNowDisplayedStep={setNowDisplayedStep}
           />
@@ -215,7 +214,7 @@ export default function Page() {
             loading={isActionWorksLoading}
             stepsList={mission?.stepsList ?? []}
             actionWorks={actionWorks}
-            currentStepSeqNo={currentStepSeqNo ?? 0}
+            currentStepSeqNo={thread?.currentStepSeqNo ?? 0}
             nowDisplayedStep={nowDisplayedStep ?? 0}
             setNowDisplayedStep={setNowDisplayedStep}
           />
