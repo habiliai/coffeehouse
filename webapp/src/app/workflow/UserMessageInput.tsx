@@ -21,7 +21,6 @@ function SendIcon(props: HTMLProps<SVGSVGElement>) {
   );
 }
 
-
 export default function UserMessageInput({
   value,
   onChange,
@@ -39,7 +38,7 @@ export default function UserMessageInput({
     <>
       <div className="relative flex w-full rounded border border-[#D9D9D9] bg-[#FAFAFA] px-3 py-2">
         <textarea
-          className="flex h-40 w-full resize-none rounded-xl bg-transparent text-base placeholder-[#8C8C8C] outline-none"
+          className="flex h-[6.375rem] w-full resize-none rounded-xl bg-transparent text-base placeholder-[#8C8C8C] outline-none lg:h-40"
           placeholder="Give answer to your agents."
           onChange={throttle((e) => onChange(e.target.value))}
           onKeyDown={
@@ -62,12 +61,12 @@ export default function UserMessageInput({
               onSubmit();
             }
           }}
-          className="absolute bottom-4 right-4 flex size-12 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500"
+          className="absolute bottom-4 right-4 flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-12"
         >
           {loading ? (
-            <StopIcon className="size-7" />
+            <StopIcon className="size-4 lg:size-7" />
           ) : (
-            <SendIcon className="size-7" />
+            <SendIcon className="size-4 lg:size-7" />
           )}
         </button>
       </div>
