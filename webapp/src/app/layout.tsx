@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-dvh h-screen w-full">
+    <html lang="en" className="h-dvh h-screen max-h-dvh w-full">
       <head>
         <title>Agent Collaborative Network</title>
         <meta name="title" content="Collaborative Agent Network" />
@@ -33,9 +33,13 @@ export default function RootLayout({
           name="description"
           content="A network for collaborative agents by missions"
         />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, device-height"
+        />
       </head>
       <body
-        className={`${fonts.variable} ${fontsMono.variable} h-full w-full antialiased`}
+        className={`${fonts.variable} ${fontsMono.variable} h-full max-h-dvh w-full antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
       </body>
