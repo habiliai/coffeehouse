@@ -131,13 +131,15 @@ func (s *server) doneAgent(
 		return nil, errors.Errorf("failed to find next step with seq no %d", nextStepSeqNo)
 	}
 
-	thread.CurrentStepSeqNo = nextStepSeqNo
 	thread.AllDone = isDone
+	if !isDone {
+		thread.CurrentStepSeqNo = nextStepSeqNo
+	}
 	if err := thread.Save(tx); err != nil {
 		return nil, err
 	}
 
-	logger.Info("done step", "seq_no", thread.CurrentStepSeqNo)
+	logger.Info("done step", "seq_no", thread.CurrentStepSeqNo, "all_done", thread.AllDone)
 
 	if hasNextStep {
 		logger.Info("go to next step", "thread_id", thread.ID, "seq_no", nextStepSeqNo)

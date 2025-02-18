@@ -66,35 +66,12 @@ export default function Page() {
       setUserMessage('');
       setMobileView('Chat');
 
-      const { text, mentions } = message
-        .split(' ')
-        .map((word) => {
-          const res = { text: word, mentions: [] };
-          if (!word.startsWith('@')) {
-            return res;
-          }
-
-          const mention = word.slice(1);
-          return { text: '', mentions: [mention] };
-        })
-        .reduce((acc, { text, mentions }) => {
-          acc.mentions.push(...mentions);
-          if (text === '') {
-            return acc;
-          }
-
-          if (acc.text !== '') {
-            acc.text += ' ';
-          }
-          acc.text += text;
-          return acc;
-        });
 
       thread?.messagesList.push({
         id: Date.now().toString(),
         role: 1,
-        text: text,
-        mentionsList: mentions,
+        text: message,
+        mentionsList: [],
       });
     },
   });

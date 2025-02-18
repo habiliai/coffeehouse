@@ -38,20 +38,20 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			}
 
 			moderator := domain.Agent{
-				Name:                  "moderator",
+				Name:                  "edan",
 				AssistantId:           "asst_aggf9nmtEM77Qy3niFq64uBK",
 				IconUrl:               "https://img.logo.dev/github.com",
 				IncludeQuestionIntent: true,
 			}
 			moderator.Save(db)
 			suggester := domain.Agent{
-				Name:        "suggester",
+				Name:        "vincent",
 				AssistantId: "asst_YHXPoVMv8oD3kzBO2xO8jIxL",
 				IconUrl:     "https://img.logo.dev/facebook.com",
 			}
 			suggester.Save(db)
 			scheduler := domain.Agent{
-				Name:        "scheduler1",
+				Name:        "john",
 				AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
 				IconUrl:     "https://img.logo.dev/google.com",
 			}
@@ -90,48 +90,49 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				},
 			}
 
-			if err := db.Create(&mission).Error; err != nil {
-				logger.Warn("failed to create mission", "err", err)
-			}
+			// TODO: Uncomment this block when the mission is ready
+			//if err := db.Create(&mission).Error; err != nil {
+			//	logger.Warn("failed to create mission", "err", err)
+			//}
 
-			weatherForecaster := domain.Agent{
-				Name:        "weather",
+			sunny := domain.Agent{
+				Name:        "sunny",
 				AssistantId: "asst_Rho49KGmpl1IkiVWtfuNDd4i",
 				IconUrl:     "https://img.logo.dev/twitter.com",
 			}
-			weatherForecaster.Save(db)
-			communityManager := domain.Agent{
-				Name:                  "comm",
+			sunny.Save(db)
+			eric := domain.Agent{
+				Name:                  "eric",
 				IconUrl:               "https://img.logo.dev/github.com",
 				IncludeQuestionIntent: true,
 				AssistantId:           "asst_e08WipDCbvGTOVlFxiMjPa10",
 			}
-			communityManager.Save(db)
-			locationRecommender := domain.Agent{
-				Name:                  "loc",
+			eric.Save(db)
+			julia := domain.Agent{
+				Name:                  "julia",
 				IconUrl:               "https://img.logo.dev/facebook.com",
 				AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
 				IncludeQuestionIntent: true,
 			}
-			locationRecommender.Save(db)
-			commentSpecialist := domain.Agent{
-				Name:        "commenter",
+			julia.Save(db)
+			stella := domain.Agent{
+				Name:        "stella",
 				IconUrl:     "https://img.logo.dev/google.com",
 				AssistantId: "asst_Duu1WXwmYwPokx3n3JYIVvRo",
 			}
-			commentSpecialist.Save(db)
-			scheduleManager := domain.Agent{
-				Name:        "scheduler2",
+			stella.Save(db)
+			amelia := domain.Agent{
+				Name:        "amelia",
 				IconUrl:     "https://img.logo.dev/whatsapp.com",
 				AssistantId: "asst_jLfJ39wLvYRKiy21Iirq6fIl",
 			}
-			scheduleManager.Save(db)
-			snsManager := domain.Agent{
-				Name:        "sns",
+			amelia.Save(db)
+			nolan := domain.Agent{
+				Name:        "nolan",
 				IconUrl:     "https://img.logo.dev/instagram.com",
 				AssistantId: "asst_OjOnv01dbmaGMa200m9bkDpm",
 			}
-			snsManager.Save(db)
+			nolan.Save(db)
 
 			mission = domain.Mission{
 				Name: "Organize a community meal gathering near Hong Kong CEC this weekend.",
@@ -140,11 +141,11 @@ func (c *cli) newSeedCmd() *cobra.Command {
 						SeqNo: 1,
 						Actions: []domain.Action{
 							{
-								AgentID: weatherForecaster.ID,
+								AgentID: sunny.ID,
 								Subject: "Check the weather forecast for this weekend",
 							},
 							{
-								AgentID: communityManager.ID,
+								AgentID: eric.ID,
 								Subject: "Find a suitable location for the gathering",
 							},
 						},
@@ -153,7 +154,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 						SeqNo: 2,
 						Actions: []domain.Action{
 							{
-								AgentID: locationRecommender.ID,
+								AgentID: julia.ID,
 								Subject: "Recommend a meeting place",
 							},
 						},
@@ -162,8 +163,8 @@ func (c *cli) newSeedCmd() *cobra.Command {
 						SeqNo: 3,
 						Actions: []domain.Action{
 							{
-								AgentID: commentSpecialist.ID,
-								Subject: "Write a comment to invite people",
+								AgentID: amelia.ID,
+								Subject: "Schedule the gathering",
 							},
 						},
 					},
@@ -171,11 +172,11 @@ func (c *cli) newSeedCmd() *cobra.Command {
 						SeqNo: 4,
 						Actions: []domain.Action{
 							{
-								AgentID: scheduleManager.ID,
-								Subject: "Schedule the gathering",
+								AgentID: stella.ID,
+								Subject: "Write a comment to invite people",
 							},
 							{
-								AgentID: snsManager.ID,
+								AgentID: nolan.ID,
 								Subject: "Post the event on X",
 							},
 						},
