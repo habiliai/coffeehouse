@@ -2,6 +2,7 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ProfileImage from '@/components/ProfileImage';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import classNames from 'classnames';
 
 export default function BotChatBubble({
   botName,
@@ -37,9 +38,9 @@ export default function BotChatBubble({
                 }}
               >
                 {collapse ? (
-                  <ChevronDown className="m-auto flex size-4" />
-                ) : (
                   <ChevronRight className="m-auto flex size-4" />
+                ) : (
+                  <ChevronDown className="m-auto flex size-4" />
                 )}
               </button>
             </div>
@@ -63,8 +64,13 @@ export default function BotChatBubble({
             </div>
           </div>
         )}
-        {!working && !collapse && (
-          <MarkdownRenderer className="prose prose-sm" content={text} />
+        {!working && (
+          <MarkdownRenderer
+            className={classNames('prose prose-sm', {
+              'line-clamp-1': collapse,
+            })}
+            content={text}
+          />
         )}
       </div>
     </div>
