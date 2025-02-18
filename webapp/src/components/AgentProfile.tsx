@@ -1,6 +1,7 @@
 import { Children, isValidElement, PropsWithChildren } from 'react';
 import ProfileImage from './ProfileImage';
 import classNames from 'classnames';
+import { AgentWork } from '@/proto/habapi';
 
 function AgentProfile({
   className,
@@ -8,18 +9,16 @@ function AgentProfile({
   name,
   imageUrl,
   children,
+  status,
 }: PropsWithChildren<{
   className?: string;
   imageClassName?: string;
   name: string;
   imageUrl: string;
+  status?: AgentWork.Status;
 }>) {
   const label = Children.toArray(children).find((child) => {
     return isValidElement(child) && child.type === AgentProfile.Label;
-  });
-
-  const icon = Children.toArray(children).find((child) => {
-    return isValidElement(child) && child.type === AgentProfile.Icon;
   });
 
   const tooltip = Children.toArray(children).find((child) => {
@@ -35,7 +34,15 @@ function AgentProfile({
             alt={`agent-${name}`}
             src={imageUrl}
           />
-          {icon && <div className="absolute bottom-0 right-0">{icon}</div>}
+          {status && <div className={classNames("absolute top-0 text-red-600 font-extrabold", {
+            '-right-4': status === AgentWork.Status.IDLE,
+            'right-0': status === AgentWork.Status.WAITING,
+            '-right-1.5': status === AgentWork.Status.WORKING,
+          })}>{
+            status === AgentWork.Status.WORKING ? "W" :
+            status === AgentWork.Status.IDLE ? "Zzz" :
+            status === AgentWork.Status.WAITING ? "!" : ""
+          }</div>}
         </div>
         {label}
 

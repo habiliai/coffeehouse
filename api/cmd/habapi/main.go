@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/habiliai/habiliai/api/pkg/cli/habapi"
+	_ "go.uber.org/automaxprocs"
 	"os"
 )
 

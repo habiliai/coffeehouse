@@ -10,8 +10,7 @@ type Mission struct {
 
 	Name string `gorm:"index:idx_mission_name,unique,where=deleted_at IS NULL"`
 
-	Agents []Agent `gorm:"many2many:missions_agents;"`
-	Tasks  []Task  `gorm:"foreignKey:MissionID"`
+	Steps []Step `gorm:"foreignKey:MissionID"`
 }
 
 func (m *Mission) Save(db *gorm.DB) error {

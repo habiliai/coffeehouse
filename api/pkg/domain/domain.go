@@ -21,7 +21,11 @@ func AutoMigrate(db *gorm.DB) error {
 		AutoMigrate(
 			&Agent{},
 			&Mission{},
-			&Task{},
+			&Thread{},
+			&Step{},
+			&Action{},
+			&ActionWork{},
+			&AgentWork{},
 		), "failed to auto migrate"); err != nil {
 		return err
 	}
@@ -31,8 +35,11 @@ func AutoMigrate(db *gorm.DB) error {
 
 func DropAll(db *gorm.DB) error {
 	return db.Migrator().DropTable(
-		"missions_agents",
-		&Task{},
+		&AgentWork{},
+		&ActionWork{},
+		&Action{},
+		&Step{},
+		&Thread{},
 		&Mission{},
 		&Agent{},
 	)

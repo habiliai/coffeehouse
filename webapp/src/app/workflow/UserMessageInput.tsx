@@ -41,7 +41,6 @@ export default function UserMessageInput({
         <textarea
           className="flex h-40 w-full resize-none rounded-xl bg-transparent text-base placeholder-[#8C8C8C] outline-none"
           placeholder="Give answer to your agents."
-          value={value}
           onChange={throttle((e) => onChange(e.target.value))}
           onKeyDown={
             loading
@@ -53,6 +52,7 @@ export default function UserMessageInput({
                   onSubmit();
                 }
           }
+          value={value}
         />
         <button
           onClick={() => {

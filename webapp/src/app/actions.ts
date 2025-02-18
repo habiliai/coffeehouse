@@ -1,5 +1,5 @@
 import { useHabiliApiClient } from '@/hooks/habapi';
-import { CreateThreadRequest } from '@/proto/habapi';
+import { Agent, CreateThreadRequest, Mission } from '@/proto/habapi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 
@@ -8,13 +8,14 @@ export function useGetMissions() {
 
   return useQuery({
     queryKey: ['habapi.getMissions'] as const,
+    initialData: [],
     queryFn: async () => {
       try {
-        const missions = await client
+        const { missionsList } = await client
           .getMissions(new Empty())
           .then((res) => res.toObject());
 
-        return missions;
+        return missionsList;
       } catch (e) {
         console.error(e);
         throw e;
@@ -28,9 +29,10 @@ export function useGetAgents() {
 
   return useQuery({
     queryKey: ['habapi.getAgents'] as const,
+    initialData: [],
     queryFn: async () => {
       try {
-        const agents = await client
+        const { agentsList: agents } = await client
           .getAgents(new Empty())
           .then((res) => res.toObject());
 
@@ -47,7 +49,7 @@ export function useCreateThread({
   onSuccess,
   onError,
 }: {
-  onSuccess?: (threadId: string) => void;
+  onSuccess?: (threadId: number) => void;
   onError?: () => void;
 } = {}) {
   const client = useHabiliApiClient();
@@ -55,16 +57,11 @@ export function useCreateThread({
   return useMutation({
     mutationKey: ['habapi.createThread'] as const,
     async mutationFn({ missionId }: { missionId: number }) {
-      try {
-        const result = await client
-          .createThread(new CreateThreadRequest().setMissionId(missionId))
-          .then((res) => res.toObject());
+      const { id: threadId } = await client
+        .createThread(new CreateThreadRequest().setMissionId(missionId))
+        .then((res) => res.toObject());
 
-        return result.id;
-      } catch (e) {
-        console.error(e);
-        throw e;
-      }
+      return threadId;
     },
     onSuccess(threadId) {
       onSuccess?.(threadId);

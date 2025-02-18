@@ -13,6 +13,7 @@
     "generate:proto:post-script": "node ./scripts/post-generate-protos.mjs",
     "generate:proto:format": "prettier --write src/proto",
     "generate:proto": "run-s generate:proto:*",
+    "generate": "run-s generate:*",
     "format": "prettier --write ./src",
     "postinstall": "node ./scripts/download-protoc-gen-grpc-web.mjs"
   },
@@ -33,6 +34,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^9.0.3",
+    "react-mentions": "^4.4.10",
     "react-syntax-highlighter": "^15.6.1",
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.0.1",
@@ -46,6 +48,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-mentions": "^4.4.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",

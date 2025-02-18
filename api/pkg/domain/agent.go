@@ -12,7 +12,7 @@ type Agent struct {
 	AssistantId string
 	IconUrl     string
 
-	Missions []Mission `gorm:"many2many:missions_agents;"`
+	IncludeQuestionIntent bool
 }
 
 func (a *Agent) Save(db *gorm.DB) error {

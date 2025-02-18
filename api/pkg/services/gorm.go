@@ -25,10 +25,10 @@ func init() {
 			}
 			go func() {
 				<-ctx.Done()
-				logger.Info("closing database")
 				if err := util.CloseDB(db); err != nil {
 					logger.Warn("failed to close database", aflog.Err(err))
 				}
+				logger.Info("database closed")
 			}()
 
 			return db, nil
@@ -39,10 +39,10 @@ func init() {
 			}
 			go func() {
 				<-ctx.Done()
-				logger.Info("closing database")
 				if err := util.CloseDB(db); err != nil {
 					logger.Warn("failed to close database", aflog.Err(err))
 				}
+				logger.Info("database closed")
 			}()
 
 			if err := domain.DropAll(db); err != nil {

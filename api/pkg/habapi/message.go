@@ -3,27 +3,26 @@ package habapi
 import (
 	"context"
 	"github.com/habiliai/habiliai/api/pkg/domain"
-	haberrors "github.com/habiliai/habiliai/api/pkg/errors"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
 	"github.com/mokiat/gog"
 	"github.com/openai/openai-go"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"strings"
-	"time"
 )
 
 func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*emptypb.Empty, error) {
 	tx := helpers.GetTx(ctx)
-	thread, threadData, err := s.getThread(ctx, req.ThreadId)
+	_, thread, err := s.getThread(ctx, req.ThreadId)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to get thread with id %s", req.ThreadId)
+		return nil, errors.Wrapf(err, "failed to get thread with id %d", req.ThreadId)
 	}
 
-	message := strings.TrimSpace(req.Message)
-	if message == "" {
-		return nil, errors.New("message is empty")
+	if req.Message == nil || *req.Message == "" {
+		return nil, errors.New("message is required")
 	}
+
+	message := strings.TrimSpace(*req.Message)
 
 	isMention := strings.HasPrefix(message, "@")
 	if !isMention {
@@ -51,7 +50,7 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 		}
 	}
 
-	messageData := NewEmptyMessageData(s.openai, thread.ID)
+	messageData := NewEmptyMessageData(s.openai, thread.OpenaiThreadId)
 	messageData.SetAgentIds(gog.Map(mentionedAgents, func(agent domain.Agent) uint {
 		return agent.ID
 	}))
@@ -68,59 +67,69 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 		Metadata: openai.F(messageData.ToParam()),
 	}
 
-	if _, err := s.openai.Beta.Threads.Messages.New(ctx, req.ThreadId, params); err != nil {
+	if _, err := s.openai.Beta.Threads.Messages.New(ctx, thread.OpenaiThreadId, params); err != nil {
 		return nil, errors.Wrapf(err, "failed to add message")
 	}
 
-	for _, agent := range mentionedAgents {
-		run, err := s.openai.Beta.Threads.Runs.New(ctx, req.ThreadId, openai.BetaThreadRunNewParams{
-			AssistantID: openai.F(agent.AssistantId),
-		})
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to run thread")
-		}
-		for {
-			run, err = s.openai.Beta.Threads.Runs.PollStatus(ctx, req.ThreadId, run.ID, 1000)
-			if err != nil {
-				return nil, errors.Wrapf(err, "failed to get run")
-			}
-
-			threadData.SetCurrentRunId(run.ID)
-			if err := threadData.Save(ctx); err != nil {
-				return nil, err
-			}
-
-			switch run.Status {
-			case openai.RunStatusCompleted:
-				logger.Debug("run completed", "run", run)
-				return &emptypb.Empty{}, nil
-			case openai.RunStatusFailed:
-				return nil, errors.Wrapf(haberrors.ErrRuntime, "run failed: %s", run.LastError.Message)
-			case openai.RunStatusIncomplete:
-				return nil, errors.Wrapf(haberrors.ErrRuntime, "Run incomplete: %s", run.IncompleteDetails.Reason)
-			case openai.RunStatusExpired:
-				return nil, errors.Wrapf(haberrors.ErrRuntime, "Run expired. expires_at: %s", time.Unix(run.ExpiresAt, 0))
-			case openai.RunStatusCancelled:
-				return nil, errors.Wrapf(haberrors.ErrRuntime, "Run cancelled")
-			case openai.RunStatusRequiresAction:
-				run, err = s.requiresAction(ctx, run)
-				if err != nil {
-					return nil, err
-				}
-			default:
-				return nil, errors.Wrapf(haberrors.ErrBadRequest, "invalid thread run status: received %s", run.Status)
-			}
-		}
+	if err := s.run(ctx, thread.ID); err != nil {
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Message, error) {
+func (s *server) convMessage(ctx context.Context, threadId string, data *openai.Message) (*Message, error) {
 	tx := helpers.GetTx(ctx)
 
+	messageData := NewMessageData(s.openai, threadId, data.ID, data.Metadata)
+
+	text := data.Content[0].Text.Value
+	msg := &Message{
+		Text: text,
+		Id:   data.ID,
+	}
+	switch data.Role {
+	case openai.MessageRoleAssistant:
+		{
+			msg.Role = Message_ASSISTANT
+			run, err := s.getRun(ctx, threadId, data.RunID)
+			if err != nil {
+				return nil, err
+			}
+
+			var agent domain.Agent
+			if err := tx.First(&agent, "assistant_id = ?", run.AssistantID).Error; err != nil {
+				return nil, errors.Wrapf(err, "failed to find agent with assistant id %s", run.AssistantID)
+			}
+
+			msg.Agent = newAgentPbFromDb(&agent)
+		}
+	case openai.MessageRoleUser:
+		{
+			msg.Role = Message_USER
+
+			var agents []domain.Agent
+			if err := tx.Find(&agents, "id IN ?", messageData.GetAgentIds()).Error; err != nil {
+				return nil, errors.Wrapf(err, "failed to find agents with ids %v", messageData.GetAgentIds())
+			}
+
+			mentions := gog.Map(agents, func(a domain.Agent) string {
+				return a.Name
+			})
+			msg.Mentions = mentions
+		}
+	default:
+		return nil, errors.Errorf("unknown message role: %s", data.Role)
+	}
+
+	return msg, nil
+}
+
+func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Message, error) {
 	var messages []*Message
-	page, err := s.openai.Beta.Threads.Messages.List(ctx, threadId, openai.BetaThreadMessageListParams{})
+	page, err := s.openai.Beta.Threads.Messages.List(ctx, threadId, openai.BetaThreadMessageListParams{
+		Order: openai.F(openai.BetaThreadMessageListParamsOrderAsc),
+	})
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to list messages")
 	}
@@ -130,45 +139,9 @@ func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Messag
 			if len(data.Content) == 0 {
 				continue
 			}
-			messageData := NewMessageData(s.openai, threadId, data.ID, data.Metadata)
-
-			text := data.Content[0].Text.Value
-			msg := &Message{
-				Text: text,
-				Id:   data.ID,
-			}
-			switch data.Role {
-			case openai.MessageRoleAssistant:
-				{
-					msg.Role = Message_ASSISTANT
-					run, err := s.getRun(ctx, threadId, data.RunID)
-					if err != nil {
-						return nil, err
-					}
-
-					var agent domain.Agent
-					if err := tx.First(&agent, "assistant_id = ?", run.AssistantID).Error; err != nil {
-						return nil, errors.Wrapf(err, "failed to find agent with assistant id %s", run.AssistantID)
-					}
-
-					msg.Agent = newAgentPbFromDb(&agent)
-				}
-			case openai.MessageRoleUser:
-				{
-					msg.Role = Message_USER
-
-					var agents []domain.Agent
-					if err := tx.Find(&agents, "agent_id IN (?)", messageData.GetAgentIds()).Error; err != nil {
-						return nil, errors.Wrapf(err, "failed to find agents with ids %v", messageData.GetAgentIds())
-					}
-
-					mentions := gog.Map(agents, func(a domain.Agent) string {
-						return a.Name
-					})
-					msg.Mentions = mentions
-				}
-			default:
-				return nil, errors.Errorf("unknown message role: %s", data.Role)
+			msg, err := s.convMessage(ctx, threadId, &data)
+			if err != nil {
+				return nil, err
 			}
 			messages = append(messages, msg)
 		}
@@ -184,4 +157,25 @@ func (s *server) getAllMessages(ctx context.Context, threadId string) ([]*Messag
 	}
 
 	return messages, nil
+}
+
+func (s *server) getLastMessage(ctx context.Context, threadId string) (*Message, error) {
+	page, err := s.openai.Beta.Threads.Messages.List(ctx, threadId, openai.BetaThreadMessageListParams{
+		Order: openai.F(openai.BetaThreadMessageListParamsOrderDesc),
+		Limit: openai.F(int64(1)),
+	})
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to list messages")
+	}
+
+	if len(page.Data) == 0 || len(page.Data[0].Content) == 0 {
+		return nil, nil
+	}
+
+	msg, err := s.convMessage(ctx, threadId, &page.Data[0])
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }
