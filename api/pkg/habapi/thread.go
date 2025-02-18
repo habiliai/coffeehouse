@@ -110,11 +110,16 @@ func (s *server) GetThread(ctx context.Context, req *ThreadId) (*Thread, error) 
 		return nil, err
 	}
 
+	if err := s.saveResult(ctx, thread); err != nil {
+		return nil, err
+	}
+
 	res := &Thread{
 		Id:               int32(thread.ID),
 		MissionId:        int32(thread.MissionID),
 		CurrentStepSeqNo: int32(thread.CurrentStepSeqNo),
 		AllDone:          thread.AllDone,
+		Result:           thread.Result,
 	}
 
 	res.Messages, err = s.getAllMessages(ctx, openaiThread.ID)

@@ -1,11 +1,17 @@
 package habapi
 
 import (
+	_ "embed"
 	"github.com/habiliai/habiliai/api/pkg/digo"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/services"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
+)
+
+var (
+	//go:embed data/templates/mission1_result.md.tmpl
+	mission1ResultTemplate string
 )
 
 func (c *cli) newSeedCmd() *cobra.Command {
@@ -135,7 +141,8 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			nolan.Save(db)
 
 			mission = domain.Mission{
-				Name: "Organize a community meal gathering near Hong Kong CEC this weekend.",
+				Name:           "Organize a community meal gathering near Hong Kong CEC this weekend.",
+				ResultTemplate: mission1ResultTemplate,
 				Steps: []domain.Step{
 					{
 						SeqNo: 1,

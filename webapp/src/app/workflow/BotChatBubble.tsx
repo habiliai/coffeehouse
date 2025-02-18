@@ -66,7 +66,7 @@ export default function BotChatBubble({
         )}
         {!working && (
           <MarkdownRenderer
-            className={classNames('prose prose-sm', {
+            className={classNames('prose prose-sm prose-a:text-blue-600', {
               'line-clamp-1': collapse,
             })}
             content={text}

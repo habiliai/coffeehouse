@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"io"
 	"net/http"
+	"time"
 )
 
 const (
@@ -16,7 +17,9 @@ const (
 )
 
 type TweetResponse struct {
-	Link string `json:"link"`
+	Link       string `json:"link"`
+	Content    string `json:"content"`
+	UploadedAt string `json:"uploaded_at"`
 }
 
 func Tweet(ctx context.Context, conf habconfig.TwitterConfig, message string) (*TweetResponse, error) {
@@ -81,11 +84,13 @@ func Tweet(ctx context.Context, conf habconfig.TwitterConfig, message string) (*
 	tweetId := respBody.Data.Id
 
 	return &TweetResponse{
-		Link: "https://twitter.com/" + habiliBotId + "/status/" + tweetId,
+		Link:       "https://twitter.com/" + habiliBotId + "/status/" + tweetId,
+		Content:    respBody.Data.Text,
+		UploadedAt: time.Now().Format(time.RFC1123),
 	}, nil
 }
 
-func SendPostToTwitter(s *service, ctx context.Context, args []byte, metadata Metadata) (any, error) {
+func SendPostToTwitter(ctx *Context, args []byte) (any, error) {
 	logger.Info("call post to twitter callback")
 	request := struct {
 		Text string `json:"text"`
@@ -95,12 +100,18 @@ func SendPostToTwitter(s *service, ctx context.Context, args []byte, metadata Me
 		return nil, errors.Wrapf(err, "failed to unmarshal args")
 	}
 
-	resp, err := Tweet(ctx, s.config.Twitter, request.Text)
+	resp, err := Tweet(ctx, ctx.config.Twitter, request.Text)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to tweet")
 	}
 
 	logger.Info("post sent to twitter")
+
+	if err := ctx.UpdateMemory(map[string]any{
+		"tweet": resp,
+	}); err != nil {
+		return nil, err
+	}
 	return resp, nil
 }
 

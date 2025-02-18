@@ -13,7 +13,7 @@ const mono = Noto_Sans_Mono({
 });
 
 export default function MarkdownRenderer({
-  className,
+  className = '',
   loading,
   content,
 }: {

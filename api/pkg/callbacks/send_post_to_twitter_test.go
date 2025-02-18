@@ -16,5 +16,6 @@ func TestTweet(t *testing.T) {
 		t.Skipf("Twitter config is not valid")
 	}
 
-	require.NoError(t, callbacks.Tweet(ctx, conf.Twitter, "Hello, world!"))
+	_, err := callbacks.Tweet(ctx, conf.Twitter, "Hello, world!")
+	require.NoError(t, err)
 }

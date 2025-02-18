@@ -8,7 +8,8 @@ import (
 type Mission struct {
 	gorm.Model
 
-	Name string `gorm:"index:idx_mission_name,unique,where=deleted_at IS NULL"`
+	Name           string `gorm:"index:idx_mission_name,unique,where=deleted_at IS NULL"`
+	ResultTemplate string
 
 	Steps []Step `gorm:"foreignKey:MissionID"`
 }

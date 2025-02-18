@@ -17,6 +17,7 @@ type Thread struct {
 
 	CurrentStepSeqNo int
 	AllDone          bool
+	Result           string
 
 	Memory []byte
 }
