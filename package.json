@@ -17,6 +17,10 @@
     "setup": "docker compose up --build -d",
     "teardown": "docker compose down",
     "test:api": "yarn workspace @habiliai/api test",
-    "test": "run-s test:*"
+    "test": "run-s test:*",
+    "docker:build:api": "docker build --platform linux/amd64 -f ./api/Dockerfile -t icn.ocir.io/axqafkgb0llg/habiliai/habili-api:latest .",
+    "docker:push:api": "docker push icn.ocir.io/axqafkgb0llg/habiliai/habili-api:latest",
+    "docker:api": "run-s docker:*:api",
+    "docker": "run-s docker:*"
   }
 }
