@@ -2,12 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useHabiliApiClient } from '@/hooks/habapi';
 import {
   AddMessageRequest,
+  GetMissionStepStatusRequest,
   GetThreadStatusRequest,
   MissionId,
-  Thread,
   ThreadId,
 } from '@/proto/habapi';
-import { useState } from 'react';
 
 export function useGetThread({ threadId }: { threadId: number | null }) {
   const habapi = useHabiliApiClient();
@@ -30,7 +29,7 @@ export function useGetThread({ threadId }: { threadId: number | null }) {
           .getThread(new ThreadId().setId(threadId))
           .then((r) => r.toObject())
           .then((r) => {
-            return { currentStep: 3, status: 'done', ...r };
+            return { status: 'done', ...r };
           });
 
         const mission = await habapi
@@ -152,6 +151,57 @@ export function useGetStatus({
         return {
           agentWorks,
           hasNewMessage,
+        };
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+    },
+  });
+}
+
+export function useGetMissionStepStatus({
+  threadId,
+  selectedSeqNo,
+}: {
+  threadId: number | null;
+  selectedSeqNo: number | null;
+}) {
+  const habapi = useHabiliApiClient();
+  return useQuery({
+    refetchInterval: 1000,
+    refetchIntervalInBackground: true,
+    enabled: !!threadId && !!selectedSeqNo,
+    queryKey: [
+      'server.getMissionStepStatus',
+      { threadId, selectedSeqNo, habapi },
+    ] as const,
+    initialData: {
+      initialLoading: true,
+      actionWorks: [],
+    },
+    queryFn: async ({
+      queryKey: [{}, { threadId, selectedSeqNo, habapi }],
+    }) => {
+      try {
+        if (!threadId || !selectedSeqNo) {
+          return {
+            initialLoading: false,
+            actionWorks: [],
+          };
+        }
+
+        const works = await habapi
+          .getMissionStepStatus(
+            new GetMissionStepStatusRequest()
+              .setThreadId(threadId)
+              .setStepSeqNo(selectedSeqNo),
+          )
+          .then((r) => r.toObject());
+
+        return {
+          initialLoading: false,
+          actionWorks: works.actionWorksList ?? [],
         };
       } catch (e) {
         console.error(e);

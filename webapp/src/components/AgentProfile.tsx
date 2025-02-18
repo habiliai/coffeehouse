@@ -28,21 +28,33 @@ function AgentProfile({
   return (
     <div className={className}>
       <div className="group relative flex flex-col items-center gap-y-2">
-        <div className={classNames('relative', imageClassName)}>
-          <ProfileImage
-            className="rounded-full"
-            alt={`agent-${name}`}
-            src={imageUrl}
-          />
-          {status && <div className={classNames("absolute top-0 text-red-600 font-extrabold", {
-            '-right-4': status === AgentWork.Status.IDLE,
-            'right-0': status === AgentWork.Status.WAITING,
-            '-right-1.5': status === AgentWork.Status.WORKING,
-          })}>{
-            status === AgentWork.Status.WORKING ? "W" :
-            status === AgentWork.Status.IDLE ? "Zzz" :
-            status === AgentWork.Status.WAITING ? "!" : ""
-          }</div>}
+        <div className="relative flex">
+          <div
+            className={classNames('relative size-10 rounded-full', {
+              'border border-[#CBD5E1]': status === AgentWork.Status.IDLE,
+              'border border-[#4AD15B]': status === AgentWork.Status.WAITING,
+            })}
+          >
+            <ProfileImage
+              className={classNames(imageClassName, {
+                'opacity-50': status === AgentWork.Status.IDLE,
+              })}
+              alt={`agent-${name}`}
+              src={imageUrl}
+            />
+          </div>
+          <div
+            className={classNames(
+              'absolute -right-[0.125rem] bottom-0 rounded-full border bg-white p-1',
+              {
+                hidden: !status || status === AgentWork.Status.WORKING,
+                'border-[#CBD5E1]': status === AgentWork.Status.IDLE,
+                'border-[#4AD15B]': status === AgentWork.Status.WAITING,
+              },
+            )}
+          >
+            <StatusIcon status={status} />
+          </div>
         </div>
         {label}
 
@@ -54,6 +66,17 @@ function AgentProfile({
       </div>
     </div>
   );
+}
+
+function StatusIcon({ status }: { status?: AgentWork.Status }) {
+  switch (status) {
+    case AgentWork.Status.IDLE:
+      return <div className="text-[7px]">💤</div>;
+    case AgentWork.Status.WAITING:
+      return <div className="text-[7px]">❗️</div>;
+    default:
+      return null;
+  }
 }
 
 const AgentLabel = ({
