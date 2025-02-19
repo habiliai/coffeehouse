@@ -170,20 +170,6 @@ export default function Page() {
         >
           <ChatSection thread={thread} agentWorks={agentWorks} />
           <div ref={observerRef} className="h-0.5" />
-
-          <div className="sticky bottom-0 flex justify-center">
-            <button
-              onClick={scrollToBottom}
-              className={classNames(
-                'flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-12',
-                {
-                  hidden: isAtBottom,
-                },
-              )}
-            >
-              <ChevronDown className='size-4 lg:size-7' />
-            </button>
-          </div>
         </div>
 
         <div
@@ -225,6 +211,22 @@ export default function Page() {
         <MobileNavbar mobileView={mobileView} setMobileView={setMobileView} />
 
         <div className="relative flex w-full flex-grow items-end px-6 pb-6 lg:pb-[1.875rem]">
+          <div
+            className={classNames(
+              'absolute -top-20 lg:-top-16 left-1/2 -translate-x-1/2',
+              {
+                hidden: isAtBottom,
+                'hidden lg:flex': !isAtBottom && mobileView !== 'Chat',
+              },
+            )}
+          >
+            <button
+              onClick={scrollToBottom}
+              className="flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-10"
+            >
+              <ChevronDown className="size-4 lg:size-6" />
+            </button>
+          </div>
           <UserMessageInput
             loading={isRunning || !thread}
             value={userMessage}
