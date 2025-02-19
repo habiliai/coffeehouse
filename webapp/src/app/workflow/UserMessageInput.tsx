@@ -62,6 +62,7 @@ export default function UserMessageInput({
             }
           }}
           className="absolute bottom-4 right-4 flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-12"
+          disabled={value.trim() === ''}
         >
           {loading ? (
             <StopIcon className="size-4 lg:size-7" />

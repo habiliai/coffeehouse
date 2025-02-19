@@ -31,7 +31,7 @@ function AgentProfile({
       <div className="relative flex">
         <div
           className={classNames(
-            'relative min-h-6 min-w-6 rounded-full ' + imageClassName,
+            'min-h-6 min-w-6 rounded-full ' + imageClassName,
             {
               'border border-[#CBD5E1]': status === AgentWork.Status.IDLE,
               'border border-[#4AD15B]': status === AgentWork.Status.WAITING || status === AgentWork.Status.WORKING,

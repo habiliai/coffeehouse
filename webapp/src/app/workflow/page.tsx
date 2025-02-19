@@ -63,6 +63,7 @@ export default function Page() {
       setRunning(false);
     },
     onMutate: (message) => {
+      setRunning(true);
       setUserMessage('');
       setMobileView('Chat');
 
@@ -97,12 +98,12 @@ export default function Page() {
         <div>
           <span className="text-sm font-bold">Agents</span>
         </div>
-        <div className="flex flex-grow overflow-y-auto flex-col p-0.5 gap-y-2">
+        <div className="flex flex-grow overflow-y-auto flex-col p-0.5 gap-y-2 scrollbar-hide">
           <AgentProfileList agentWorks={agentWorks} />
         </div>
       </div>
 
-      <div className="flex h-full w-full lg:w-fit flex-col border border-[#E5E7EB] bg-white lg:max-w-[30.25rem]">
+      <div className="flex flex-grow h-full lg:w-fit flex-col border border-[#E5E7EB] bg-white lg:max-w-[30.25rem]">
         <div className="relative flex items-center justify-center px-14 py-5 lg:py-6">
           <button
             className="absolute left-2 flex lg:hidden"
