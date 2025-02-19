@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/pkg/errors"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +20,7 @@ type Thread struct {
 	AllDone          bool
 	Result           string
 
-	Memory []byte
+	Data datatypes.JSONType[map[string]any]
 }
 
 func (t *Thread) Save(db *gorm.DB) error {

@@ -3,7 +3,6 @@ package habapi
 import (
 	"context"
 	"encoding/json"
-	"github.com/Masterminds/sprig/v3"
 	"github.com/habiliai/habiliai/api/pkg/callbacks"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
@@ -12,7 +11,6 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"strings"
-	"text/template"
 )
 
 func (s *server) requiresCallback(ctx context.Context, run *openai.Run, thread *domain.Thread, actionWork *domain.ActionWork, agentWork *domain.AgentWork) (*openai.Run, error) {
@@ -153,38 +151,5 @@ func (s *server) doneAgent(
 		})
 	}
 
-	if thread.AllDone {
-		logger.Info("all done", "thread_id", thread.ID)
-		if err := s.saveResult(ctx, thread); err != nil {
-			return nil, err
-		}
-	}
-
 	return nil, nil
-}
-
-func (s *server) saveResult(ctx context.Context, thread *domain.Thread) error {
-	tx := helpers.GetTx(ctx)
-	tpl, err := template.New("").Funcs(sprig.FuncMap()).Parse(thread.Mission.ResultTemplate)
-	if err != nil {
-		return errors.Wrapf(err, "failed to parse result template")
-	}
-
-	var memory map[string]any
-	if err := json.Unmarshal(thread.Memory, &memory); err != nil {
-		return errors.Wrapf(err, "failed to unmarshal result data")
-	}
-
-	logger.Debug("execute result template", "memory", memory)
-
-	var resultBuilder strings.Builder
-	if err := tpl.Execute(&resultBuilder, memory); err != nil {
-		return errors.Wrapf(err, "failed to execute result template")
-	}
-
-	thread.Result = resultBuilder.String()
-
-	return tx.Transaction(func(tx *gorm.DB) error {
-		return thread.Save(tx)
-	})
 }

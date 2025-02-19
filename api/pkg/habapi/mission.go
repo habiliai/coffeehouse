@@ -2,12 +2,15 @@ package habapi
 
 import (
 	"context"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/habiliai/habiliai/api/pkg/domain"
 	"github.com/habiliai/habiliai/api/pkg/helpers"
 	"github.com/mokiat/gog"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm/clause"
+	"strings"
+	"text/template"
 )
 
 func (s *server) GetMissions(ctx context.Context, _ *emptypb.Empty) (*GetMissionsResponse, error) {
@@ -96,4 +99,22 @@ func (s *server) GetMissionStepStatus(ctx context.Context, req *GetMissionStepSt
 			return res
 		}),
 	}, nil
+}
+
+func (s *server) generateResult(thread *domain.Thread) (string, error) {
+	tpl, err := template.New("").Funcs(sprig.FuncMap()).Parse(thread.Mission.ResultTemplate)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to parse result template")
+	}
+
+	memory := thread.Data.Data()
+
+	logger.Debug("execute result template", "memory", memory)
+
+	var resultBuilder strings.Builder
+	if err := tpl.Execute(&resultBuilder, memory); err != nil {
+		return "", errors.Wrapf(err, "failed to execute result template")
+	}
+
+	return resultBuilder.String(), nil
 }
