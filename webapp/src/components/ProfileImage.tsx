@@ -33,14 +33,13 @@ const ProfileImage = ({
 
   return (
     <Image
-      fill
       className={className}
       alt={alt}
       src={src}
       width={0}
       height={0}
       sizes="100vw"
-      placeholder={placeholder}
+      style={{ width: '100%', height: 'auto' }}
     />
   );
 };

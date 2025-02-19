@@ -6,6 +6,7 @@ import (
 	"github.com/habiliai/habiliai/api/pkg/helpers"
 	"github.com/openai/openai-go"
 	"github.com/pkg/errors"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"slices"
 )
@@ -36,6 +37,7 @@ func (s *server) CreateThread(ctx context.Context, req *CreateThreadRequest) (*T
 			MissionID:        mission.ID,
 			Mission:          mission,
 			CurrentStepSeqNo: 1,
+			Data:             datatypes.NewJSONType(map[string]interface{}{}),
 		}
 		if err := thread.Save(tx); err != nil {
 			return errors.Wrap(err, "failed to save thread")

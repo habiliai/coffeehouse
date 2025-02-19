@@ -90,17 +90,19 @@ export default function Page() {
 
   return (
     <div className="flex w-full flex-row gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem]">
-      <div className="shadow-view hidden w-full max-w-[8.125rem] flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-[2.375rem] lg:flex">
-        <button className="mb-14" onClick={() => router.back()}>
+      <div className="shadow-view hidden flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-9 lg:flex px-4 gap-y-7">
+        <button onClick={() => router.back()}>
           <ChevronLeft />
         </button>
-        <div className="mb-7">
+        <div>
           <span className="text-sm font-bold">Agents</span>
         </div>
-        <AgentProfileList agentWorks={agentWorks} />
+        <div className="flex flex-grow overflow-y-auto flex-col p-0.5 gap-y-2">
+          <AgentProfileList agentWorks={agentWorks} />
+        </div>
       </div>
 
-      <div className="shadow-view flex h-full w-full flex-col border border-[#E5E7EB] bg-white lg:max-w-[30.25rem]">
+      <div className="flex h-full w-full lg:w-fit flex-col border border-[#E5E7EB] bg-white lg:max-w-[30.25rem]">
         <div className="relative flex items-center justify-center px-14 py-5 lg:py-6">
           <button
             className="absolute left-2 flex lg:hidden"
@@ -117,15 +119,15 @@ export default function Page() {
             <LoadingSpinner className="m-auto flex h-12 w-12" />
           )}
         </div>
-        <div className="flex w-full justify-center gap-x-6 pb-[0.875rem] lg:hidden">
+        <div className="flex w-full justify-between px-1.5 gap-x-6 pb-1 lg:hidden overflow-x-auto flex-shrink-0 scrollbar-hide">
           <AgentProfileList agentWorks={agentWorks} />
         </div>
 
         <div
           className={classNames(
-            'h-full flex-col gap-4 overflow-y-auto border-t border-[#E2E8F0] px-6 py-9',
+            'h-full flex-col gap-4 overflow-y-auto border-t border-[#E2E8F0] px-4 py-4',
             {
-              flex: mobileView === 'Chat',
+              'flex flex-grow': mobileView === 'Chat',
               'hidden lg:flex': mobileView !== 'Chat',
             },
           )}
@@ -138,7 +140,7 @@ export default function Page() {
             'h-full flex-col overflow-y-auto border-t border-[#E2E8F0] p-6',
             {
               hidden: mobileView !== 'Workflow',
-              'flex lg:hidden': mobileView === 'Workflow',
+              'flex flex-grow lg:hidden lg:flex-auto': mobileView === 'Workflow',
             },
           )}
         >
@@ -157,7 +159,7 @@ export default function Page() {
             'h-full flex-col overflow-y-auto border-t border-[#E2E8F0] p-6',
             {
               hidden: mobileView !== 'Outcome',
-              'flex lg:hidden': mobileView === 'Outcome',
+              'flex flex-grow lg:hidden lg:flex-auto': mobileView === 'Outcome',
             },
           )}
         >
@@ -228,7 +230,7 @@ function AgentProfileList({
             key={`workflow-agent-${agent.id}`}
             name={agent.name}
             imageUrl={agent.iconUrl}
-            imageClassName="p-2 size-10"
+            imageClassName="p-2 w-14 h-14"
             status={status}
           >
             <AgentProfile.Label className="text-sm font-light">
@@ -237,7 +239,7 @@ function AgentProfileList({
           </AgentProfile>
         ))
       ) : (
-        <LoadingSpinner className="flex h-12 w-12" />
+        <LoadingSpinner className="m-auto flex h-12 w-12" />
       )}
     </>
   );

@@ -58,7 +58,7 @@ export function VerticalCarousel({
         orientation="vertical"
         className="w-full"
       >
-        <CarouselContent className="-mt-1 h-[200px]">
+        <CarouselContent className="-mt-1 h-[3.685rem] lg:h-[12.5rem]">
           {items.map((item, index) => (
             <CarouselItem
               key={`carousel-item-${index}`}

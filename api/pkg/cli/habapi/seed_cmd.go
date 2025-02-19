@@ -46,20 +46,20 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			moderator := domain.Agent{
 				Name:                  "edan",
 				AssistantId:           "asst_aggf9nmtEM77Qy3niFq64uBK",
-				IconUrl:               "https://img.logo.dev/github.com",
+				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_2-qjcaZG8UxoP6TLl8wVoCHBgldAs89J.png",
 				IncludeQuestionIntent: true,
 			}
 			moderator.Save(db)
 			suggester := domain.Agent{
 				Name:        "vincent",
 				AssistantId: "asst_YHXPoVMv8oD3kzBO2xO8jIxL",
-				IconUrl:     "https://img.logo.dev/facebook.com",
+				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_3-FT5HiZTgMpE2Lspch6BsRi0OPO4IlP.png",
 			}
 			suggester.Save(db)
 			scheduler := domain.Agent{
 				Name:        "john",
 				AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
-				IconUrl:     "https://img.logo.dev/google.com",
+				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_4-2Nak14Txvun5JvkF573HieU0849Z9M.png",
 			}
 			scheduler.Save(db)
 
@@ -104,38 +104,38 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			sunny := domain.Agent{
 				Name:        "sunny",
 				AssistantId: "asst_Rho49KGmpl1IkiVWtfuNDd4i",
-				IconUrl:     "https://img.logo.dev/twitter.com",
+				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_1-UDKR09vHK9lvc8X64QNBduP983CRH2.png",
 			}
 			sunny.Save(db)
 			eric := domain.Agent{
 				Name:                  "eric",
-				IconUrl:               "https://img.logo.dev/github.com",
+				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile2_fin-fgp1RqJ0pSckjx6voV6ZLa8JhXiwVQ.png",
 				IncludeQuestionIntent: true,
 				AssistantId:           "asst_e08WipDCbvGTOVlFxiMjPa10",
 			}
 			eric.Save(db)
 			julia := domain.Agent{
 				Name:                  "julia",
-				IconUrl:               "https://img.logo.dev/facebook.com",
+				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile1_fin-s0sfdDypzwEeM9oXu4ktfZktIE4DDZ.png",
 				AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
 				IncludeQuestionIntent: true,
 			}
 			julia.Save(db)
 			stella := domain.Agent{
 				Name:        "stella",
-				IconUrl:     "https://img.logo.dev/google.com",
+				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile4_fin-IqdC8Bql3RRrF4mtHW6LdxVuCyygWH.png",
 				AssistantId: "asst_Duu1WXwmYwPokx3n3JYIVvRo",
 			}
 			stella.Save(db)
 			amelia := domain.Agent{
 				Name:        "amelia",
-				IconUrl:     "https://img.logo.dev/whatsapp.com",
+				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile5_fin-Rya4OZX7HYfLd8Xrq4wVjHoKEn6nf3.png",
 				AssistantId: "asst_jLfJ39wLvYRKiy21Iirq6fIl",
 			}
 			amelia.Save(db)
 			nolan := domain.Agent{
 				Name:        "nolan",
-				IconUrl:     "https://img.logo.dev/instagram.com",
+				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile3_fin-prGwytGtS6ahk6iO9Xqy7ul272MAIv.png",
 				AssistantId: "asst_OjOnv01dbmaGMa200m9bkDpm",
 			}
 			nolan.Save(db)
