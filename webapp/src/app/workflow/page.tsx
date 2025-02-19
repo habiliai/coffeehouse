@@ -161,7 +161,7 @@ export default function Page() {
         <div
           ref={chatContainerRef}
           className={classNames(
-            'relative h-full flex-col gap-4 overflow-y-auto border-t border-[#E2E8F0] px-4 py-4',
+            'relative h-full flex-col overflow-y-auto border-t border-[#E2E8F0] px-4 py-4',
             {
               'flex flex-grow': mobileView === 'Chat',
               'hidden lg:flex': mobileView !== 'Chat',
