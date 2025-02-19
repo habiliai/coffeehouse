@@ -116,7 +116,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			eric.Save(db)
 			julia := domain.Agent{
 				Name:                  "julia",
-				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile1_fin-s0sfdDypzwEeM9oXu4ktfZktIE4DDZ.png",
+				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile1_fin-yJ5v3itdrTokAjXqUjTX6bT3DqVhgU.png",
 				AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
 				IncludeQuestionIntent: true,
 			}
@@ -128,9 +128,10 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			}
 			stella.Save(db)
 			amelia := domain.Agent{
-				Name:        "amelia",
-				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile5_fin-Rya4OZX7HYfLd8Xrq4wVjHoKEn6nf3.png",
-				AssistantId: "asst_jLfJ39wLvYRKiy21Iirq6fIl",
+				Name:                  "amelia",
+				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile5_fin-Rya4OZX7HYfLd8Xrq4wVjHoKEn6nf3.png",
+				AssistantId:           "asst_jLfJ39wLvYRKiy21Iirq6fIl",
+				IncludeQuestionIntent: true,
 			}
 			amelia.Save(db)
 			nolan := domain.Agent{

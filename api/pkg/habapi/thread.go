@@ -128,9 +128,11 @@ func (s *server) GetThread(ctx context.Context, req *ThreadId) (*Thread, error) 
 		return res, nil
 	}
 
-	res.Result, err = s.generateResult(thread)
-	if err != nil {
-		return nil, err
+	if thread.AllDone {
+		res.Result, err = s.generateResult(thread)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return res, nil

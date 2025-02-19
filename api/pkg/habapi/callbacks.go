@@ -26,14 +26,14 @@ func (s *server) requiresCallback(ctx context.Context, run *openai.Run, thread *
 			output struct {
 				Success bool   `json:"success"`
 				Reason  string `json:"reason,omitempty"`
-				Result  any    `json:"result.omitempty"`
+				Result  any    `json:"result,omitempty"`
 			}
 		)
 
 		var outputErr error
 		switch strings.ToLower(toolCall.Function.Name) {
-		case "done_agent": // this special case is used to mark the agent as idle
-			output.Result, outputErr = s.doneAgent(ctx, thread, agentWork, actionWork)
+		case "submit_results", "done_agent": // this special case is used to mark the agent as idle
+			output.Result, outputErr = s.doneAgent(ctx, thread, agentWork, actionWork, toolCall.Function.Arguments)
 		default:
 			metadata := callbacks.Metadata{
 				AgentWork:  agentWork,
@@ -80,8 +80,11 @@ func (s *server) doneAgent(
 	thread *domain.Thread,
 	agentWork *domain.AgentWork,
 	actionWork *domain.ActionWork,
+	argsStr string,
 ) (any, error) {
 	tx := helpers.GetTx(ctx)
+
+	logger.Debug("submit results", "name", agentWork.Agent.Name, "action", actionWork.Action.Subject, "args", argsStr)
 
 	if err := tx.Transaction(func(tx *gorm.DB) error {
 		actionWork.Done = true
