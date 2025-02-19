@@ -20,7 +20,7 @@ type Thread struct {
 	AllDone          bool
 	Result           string
 
-	Data datatypes.JSONType[map[string]any]
+	Data datatypes.JSONType[map[string]any] `gorm:"default:'{}'"`
 }
 
 func (t *Thread) Save(db *gorm.DB) error {
