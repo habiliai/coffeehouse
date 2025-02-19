@@ -5,7 +5,6 @@ import {
   GetMissionStepStatusRequest,
   GetThreadStatusRequest,
   MissionId,
-  Thread,
   ThreadId,
 } from '@/proto/habapi';
 
