@@ -86,6 +86,8 @@ message Thread {
   repeated Message messages = 2;
   int32 mission_id = 3;
   int32 current_step_seq_no = 4;
+  bool all_done = 5;
+  string result = 6;
 }
 
 message AgentMessageContent {

@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "generate:proto": "make pb",
+    "generate": "run-s generate:*"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

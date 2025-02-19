@@ -34,20 +34,18 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 		return nil, errors.New("you must mention at least an agent")
 	}
 
-	textPieces := make([]string, 0, len(messagePieces))
 	mentionedAgents := make([]domain.Agent, 0, len(messagePieces))
 	for _, messagePiece := range messagePieces {
 		if !strings.HasPrefix(messagePiece, "@") {
-			textPieces = append(textPieces, messagePiece)
 			continue
-		} else {
-			agentName := strings.TrimPrefix(messagePiece, "@")
-			var agent domain.Agent
-			if err := tx.First(&agent, "name = ?", agentName).Error; err != nil {
-				return nil, errors.Wrapf(err, "failed to find agent with name %s", agentName)
-			}
-			mentionedAgents = append(mentionedAgents, agent)
 		}
+
+		agentName := strings.ToLower(strings.TrimPrefix(messagePiece, "@"))
+		var agent domain.Agent
+		if err := tx.First(&agent, "name = ?", agentName).Error; err != nil {
+			return nil, errors.Wrapf(err, "failed to find agent with name %s", agentName)
+		}
+		mentionedAgents = append(mentionedAgents, agent)
 	}
 
 	messageData := NewEmptyMessageData(s.openai, thread.OpenaiThreadId)
@@ -55,11 +53,10 @@ func (s *server) AddMessage(ctx context.Context, req *AddMessageRequest) (*empty
 		return agent.ID
 	}))
 
-	text := strings.Join(textPieces, " ")
 	params := openai.BetaThreadMessageNewParams{
 		Content: openai.F([]openai.MessageContentPartParamUnion{
 			openai.TextContentBlockParam{
-				Text: openai.F(text),
+				Text: openai.F(message),
 				Type: openai.F(openai.TextContentBlockParamTypeText),
 			},
 		}),

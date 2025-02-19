@@ -1,7 +1,6 @@
 package callbacks
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -127,7 +126,7 @@ func getWeatherSummary(apiKey string, date string, latitude, longitude float64, 
 	return &weatherResp, nil
 }
 
-func GetWeather(s *service, ctx context.Context, args []byte, metadata Metadata) (any, error) {
+func GetWeather(ctx *Context, args []byte) (any, error) {
 	var req struct {
 		Location string `json:"location"`
 		Date     string `json:"date"`
@@ -142,14 +141,20 @@ func GetWeather(s *service, ctx context.Context, args []byte, metadata Metadata)
 	}
 	logger.Debug("get_weather", "location", req.Location, "date", req.Date)
 
-	latitude, longitude, err := getCoordinates(s.config.OpenWeatherApiKey, req.Location)
+	latitude, longitude, err := getCoordinates(ctx.config.OpenWeatherApiKey, req.Location)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to convert coordinates")
 	}
 
-	weatherSummary, err := getWeatherSummary(s.config.OpenWeatherApiKey, req.Date, latitude, longitude, "metric", "en")
+	weatherSummary, err := getWeatherSummary(ctx.config.OpenWeatherApiKey, req.Date, latitude, longitude, "metric", "en")
 	if err != nil {
 		return nil, errors.Wrapf(err, "error occurred while fetching weather information")
+	}
+
+	if err := ctx.UpdateMemory(map[string]any{
+		"weather_summary": weatherSummary,
+	}); err != nil {
+		return nil, err
 	}
 
 	return weatherSummary, nil

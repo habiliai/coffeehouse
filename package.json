@@ -21,6 +21,11 @@
     "docker:build:api": "docker build --platform linux/amd64 -f ./api/Dockerfile -t icn.ocir.io/axqafkgb0llg/habiliai/habili-api:latest .",
     "docker:push:api": "docker push icn.ocir.io/axqafkgb0llg/habiliai/habili-api:latest",
     "docker:api": "run-s docker:*:api",
-    "docker": "run-s docker:*"
+    "docker": "run-s docker:*",
+    "generate:webapp": "yarn workspace @habiliai/webapp generate",
+    "generate:api": "yarn workspace @habiliai/api generate",
+    "generate": "run-s generate:*",
+    "lint:webapp": "yarn workspace @habiliai/webapp lint",
+    "lint": "run-s lint:*"
   }
 }

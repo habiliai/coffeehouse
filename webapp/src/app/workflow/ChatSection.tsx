@@ -20,14 +20,14 @@ export default function ChatSection({
       ) : (
         <>
           {thread.messagesList.map(
-            ({ id, role, text, agent, mentionsList: mentions }) => {
+            ({ id, role, text, agent }) => {
               switch (role) {
                 case 1:
                   return (
                     <UserChatBubble
+                      id={id}
                       key={`thread-user-${id}`}
                       text={text}
-                      mentions={mentions}
                     />
                   );
                 case 2:

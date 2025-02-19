@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/pkg/errors"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -12,13 +13,14 @@ type Thread struct {
 	CurrentRunId   string
 	LastMessageId  string
 
-	MissionID uint    `gorm:"index:idx_mission_id_current_step_seq_no_uniq,unique,where=deleted_at IS NULL"`
+	MissionID uint
 	Mission   Mission `gorm:"foreignKey:MissionID"`
 
-	CurrentStepSeqNo int `gorm:"index:idx_mission_id_current_step_seq_no_uniq,unique,where=deleted_at IS NULL"`
+	CurrentStepSeqNo int
 	AllDone          bool
+	Result           string
 
-	Memory []byte
+	Data datatypes.JSONType[map[string]any] `gorm:"default:'{}'"`
 }
 
 func (t *Thread) Save(db *gorm.DB) error {

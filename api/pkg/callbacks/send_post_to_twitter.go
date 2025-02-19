@@ -9,9 +9,20 @@ import (
 	"github.com/pkg/errors"
 	"io"
 	"net/http"
+	"time"
 )
 
-func Tweet(ctx context.Context, conf habconfig.TwitterConfig, message string) error {
+const (
+	habiliBotId = "alice_habili"
+)
+
+type TweetResponse struct {
+	Link       string `json:"link"`
+	Content    string `json:"content"`
+	UploadedAt string `json:"uploaded_at"`
+}
+
+func Tweet(ctx context.Context, conf habconfig.TwitterConfig, message string) (*TweetResponse, error) {
 	type (
 		Payload struct {
 			Text string `json:"text"`
@@ -41,7 +52,7 @@ func Tweet(ctx context.Context, conf habconfig.TwitterConfig, message string) er
 		Text: message,
 	})
 	if err != nil {
-		return errors.Wrapf(err, "failed to marshal payload")
+		return nil, errors.Wrapf(err, "failed to marshal payload")
 	}
 
 	req, _ := http.NewRequestWithContext(ctx, "POST", tweetUrl, bytes.NewReader(payload))
@@ -49,50 +60,62 @@ func Tweet(ctx context.Context, conf habconfig.TwitterConfig, message string) er
 
 	res, err := httpClient.Do(req)
 	if err != nil {
-		return errors.Wrapf(err, "failed to post tweet")
+		return nil, errors.Wrapf(err, "failed to post tweet")
 	}
 	defer res.Body.Close()
 
 	responseBodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return errors.Wrapf(err, "failed to read response body")
+		return nil, errors.Wrapf(err, "failed to read response body")
 	}
 	if res.StatusCode != http.StatusCreated {
-		return errors.Errorf("failed to post tweet, status code: %d, body: '%s'", res.StatusCode, string(responseBodyBytes))
+		return nil, errors.Errorf("failed to post tweet, status code: %d, body: '%s'", res.StatusCode, string(responseBodyBytes))
 	}
 
 	var respBody ResponseBody
 	if err := json.Unmarshal(responseBodyBytes, &respBody); err != nil {
-		return errors.Wrapf(err, "failed to decode response body")
+		return nil, errors.Wrapf(err, "failed to decode response body")
 	}
 
 	if len(respBody.Errors) > 0 {
-		return errors.Errorf("failed to post tweet, errors: %v", respBody.Errors)
+		return nil, errors.Errorf("failed to post tweet, errors: %v", respBody.Errors)
 	}
 
-	return nil
+	tweetId := respBody.Data.Id
+
+	return &TweetResponse{
+		Link:       "https://twitter.com/" + habiliBotId + "/status/" + tweetId,
+		Content:    respBody.Data.Text,
+		UploadedAt: time.Now().Format(time.RFC1123),
+	}, nil
 }
 
-func SendPostToTwitter(s *service, ctx context.Context, args []byte, metadata Metadata) (any, error) {
+func SendPostToTwitter(ctx *Context, args []byte) (any, error) {
 	logger.Info("call post to twitter callback")
 	request := struct {
-		Message   string   `json:"message"`
-		Tags      []string `json:"tags"`
-		MediaUrls []string `json:"media_urls"`
+		Text string `json:"text"`
 	}{}
 
 	if err := json.Unmarshal(args, &request); err != nil {
 		return nil, errors.Wrapf(err, "failed to unmarshal args")
 	}
 
-	if err := Tweet(ctx, s.config.Twitter, request.Message); err != nil {
+	resp, err := Tweet(ctx, ctx.config.Twitter, request.Text)
+	if err != nil {
 		return nil, errors.Wrapf(err, "failed to tweet")
 	}
 
 	logger.Info("post sent to twitter")
-	return nil, nil
+
+	if err := ctx.UpdateMemory(map[string]any{
+		"tweet": resp,
+	}); err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func init() {
 	dispatchFunctions["post_to_twitter"] = SendPostToTwitter
+	dispatchFunctions["post_to_x"] = SendPostToTwitter
 }
