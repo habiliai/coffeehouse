@@ -8,7 +8,7 @@ export default function MobileNavbar({
   setMobileView: (view: 'Chat' | 'Workflow' | 'Outcome') => void;
 }) {
   return (
-    <div className="flex justify-center pb-[0.875rem] lg:hidden">
+    <div className="flex justify-center pb-3.5 lg:hidden gap-x-2">
       <MobileViewButton
         isSelected={mobileView === 'Chat'}
         name="Chat"
@@ -40,19 +40,19 @@ function MobileViewButton({
   return (
     <div
       className={classNames(
-        'flex items-center rounded-[6.25rem] border-2 p-[1px]',
+        'flex items-center rounded-[6.25rem] ring-2 ring-offset-1',
         {
-          'border-[#4AD15B]': isSelected,
-          'border-transparent': !isSelected,
+          'ring-[#4AD15B]': isSelected,
+          'ring-transparent': !isSelected,
         },
       )}
     >
       <button
         className={classNames(
-          'rounded-[6.25rem] border px-[1.125rem] py-[0.0625rem] text-sm',
+          'rounded-[6.25rem] ring-1 px-[1.125rem] py-[0.0625rem] text-sm ring-offset-1',
           {
-            'border-[#4AD15B] bg-[#4AD15B] font-bold text-white': isSelected,
-            'border-[#E5E7EB] font-normal text-black shadow-button':
+            'ring-[#4AD15B] bg-[#4AD15B] font-bold text-white': isSelected,
+            'ring-[#E5E7EB] font-normal text-black shadow-button':
               !isSelected,
           },
         )}

@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'img.logo.dev',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'u6mo491ntx4iwuoz.public.blob.vercel-storage.com',
+        pathname: '/**',
       }
     ]
   },

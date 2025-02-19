@@ -106,7 +106,7 @@ export default function Home() {
                     <motion.div layoutId={`agent-${agent.id}`}>
                       <AgentProfile
                         className="w-32"
-                        imageClassName="size-16"
+                        imageClassName="w-14 h-14"
                         name={agent.name}
                         imageUrl={agent.iconUrl}
                       >
@@ -124,12 +124,12 @@ export default function Home() {
               Mission Start
             </Button>
           </div>
-          <div className="flex h-24 flex-wrap justify-center gap-4">
+          <div className="flex h-24 flex-wrap justify-between gap-x-10 gap-y-1">
             {unassignedAgents?.map((agent) => (
               <motion.div key={agent.id} layoutId={`agent-${agent.id}`}>
                 <AgentProfile
                   className="w-32"
-                  imageClassName="size-16"
+                  imageClassName="w-14 h-14"
                   name={agent.name}
                   imageUrl={agent.iconUrl}
                 >
