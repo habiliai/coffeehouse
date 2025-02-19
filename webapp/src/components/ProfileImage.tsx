@@ -33,7 +33,6 @@ const ProfileImage = ({
 
   return (
     <Image
-      fill
       className={className}
       alt={alt}
       src={src}

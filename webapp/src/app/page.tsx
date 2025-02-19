@@ -106,7 +106,7 @@ export default function Home() {
                     <motion.div layoutId={`agent-${agent.id}`}>
                       <AgentProfile
                         className="w-32"
-                        imageClassName="size-16"
+                        imageClassName="w-14 h-14"
                         name={agent.name}
                         imageUrl={agent.iconUrl}
                       >
@@ -129,7 +129,7 @@ export default function Home() {
               <motion.div key={agent.id} layoutId={`agent-${agent.id}`}>
                 <AgentProfile
                   className="w-32"
-                  imageClassName="size-16"
+                  imageClassName="w-14 h-14"
                   name={agent.name}
                   imageUrl={agent.iconUrl}
                 >
