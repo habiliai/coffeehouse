@@ -14,7 +14,7 @@ export default function ChatSection({
   }[];
 }) {
   return (
-    <div className='flex flex-col gap-4 grow'>
+    <div className='flex flex-col flex-1 gap-4'>
       {!thread ? (
         <LoadingSpinner className="m-auto flex h-12 w-12" />
       ) : (
