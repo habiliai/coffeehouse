@@ -8,8 +8,8 @@ import {
   useGetMissionStepStatus,
 } from './actions';
 import AgentProfile from '@/components/AgentProfile';
-import { ChevronLeft } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, ChevronDown } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import UserMessageInput from './UserMessageInput';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Agent, AgentWork } from '@/proto/habapi';
@@ -47,6 +47,10 @@ export default function Page() {
     'Chat',
   );
 
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
   const {
     data: { initialLoading: isActionWorksLoading, actionWorks },
   } = useGetMissionStepStatus({
@@ -73,6 +77,7 @@ export default function Page() {
         text: message,
         mentionsList: [],
       });
+      setTimeout(scrollToBottom, 200);
     },
   });
 
@@ -84,13 +89,43 @@ export default function Page() {
     navigator.clipboard.writeText('');
   }, []);
 
+  const scrollToBottom = useCallback(() => {
+    if (!chatContainerRef.current) return;
+
+    observerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }, []);
+
   useEffect(() => {
     if (!thread) return;
     setNowDisplayedStep(thread.currentStepSeqNo);
   }, [thread]);
 
+  useEffect(() => {
+    const observerTarget = observerRef.current;
+    if (!observerTarget || !chatContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAtBottom(entry.isIntersecting);
+      },
+      {
+        root: chatContainerRef.current,
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(observerTarget);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="flex w-full flex-row gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem]">
+    <div className="flex w-full flex-col gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem] lg:flex-row">
       <div className="shadow-view hidden flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-9 lg:flex px-4 gap-y-7">
         <button onClick={() => router.back()}>
           <ChevronLeft />
@@ -125,8 +160,9 @@ export default function Page() {
         </div>
 
         <div
+          ref={chatContainerRef}
           className={classNames(
-            'h-full flex-col gap-4 overflow-y-auto border-t border-[#E2E8F0] px-4 py-4',
+            'relative h-full flex-col overflow-y-auto border-t border-[#E2E8F0] px-4 py-4',
             {
               'flex flex-grow': mobileView === 'Chat',
               'hidden lg:flex': mobileView !== 'Chat',
@@ -134,6 +170,7 @@ export default function Page() {
           )}
         >
           <ChatSection thread={thread} agentWorks={agentWorks} />
+          <div ref={observerRef} className="h-0.5" />
         </div>
 
         <div
@@ -175,6 +212,22 @@ export default function Page() {
         <MobileNavbar mobileView={mobileView} setMobileView={setMobileView} />
 
         <div className="relative flex w-full flex-grow items-end px-6 pb-6 lg:pb-[1.875rem]">
+          <div
+            className={classNames(
+              'absolute -top-20 lg:-top-16 left-1/2 -translate-x-1/2',
+              {
+                hidden: isAtBottom,
+                'hidden lg:flex': !isAtBottom && mobileView !== 'Chat',
+              },
+            )}
+          >
+            <button
+              onClick={scrollToBottom}
+              className="flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-10"
+            >
+              <ChevronDown className="size-4 lg:size-6" />
+            </button>
+          </div>
           <UserMessageInput
             loading={isRunning || !thread}
             value={userMessage}
