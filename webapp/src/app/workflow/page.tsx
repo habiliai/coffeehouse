@@ -77,6 +77,7 @@ export default function Page() {
         text: message,
         mentionsList: [],
       });
+      setTimeout(scrollToBottom, 200);
     },
   });
 
