@@ -124,7 +124,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="flex w-full flex-row gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem]">
+    <div className="flex w-full flex-col gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem] lg:flex-row">
       <div className="shadow-view hidden flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-9 lg:flex px-4 gap-y-7">
         <button onClick={() => router.back()}>
           <ChevronLeft />
