@@ -125,20 +125,20 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="flex w-full flex-col gap-[0.875rem] bg-[#F7F7F7] lg:pr-[0.875rem] lg:flex-row">
-      <div className="shadow-view hidden flex-col items-center gap-2 border border-[#E5E7EB] bg-white py-9 lg:flex px-4 gap-y-7">
+    <div className="flex w-full flex-col gap-[0.875rem] bg-[#F7F7F7] lg:flex-row lg:pr-[0.875rem]">
+      <div className="shadow-view hidden flex-col items-center gap-2 gap-y-7 border border-[#E5E7EB] bg-white px-4 py-9 lg:flex">
         <button onClick={() => router.back()}>
           <ChevronLeft />
         </button>
         <div>
           <span className="text-sm font-bold">Agents</span>
         </div>
-        <div className="flex flex-grow overflow-y-auto flex-col p-0.5 gap-y-2 scrollbar-hide">
+        <div className="scrollbar-hide flex flex-grow flex-col gap-y-2 overflow-y-auto p-0.5">
           <AgentProfileList agentWorks={agentWorks} />
         </div>
       </div>
 
-      <div className="flex flex-grow h-full lg:w-fit flex-col border border-[#E5E7EB] bg-white lg:max-w-[30.25rem]">
+      <div className="flex h-full flex-grow flex-col border border-[#E5E7EB] bg-white lg:w-fit lg:max-w-[30.25rem]">
         <div className="relative flex items-center justify-center px-14 py-5 lg:py-6">
           <button
             className="absolute left-2 flex lg:hidden"
@@ -155,7 +155,7 @@ export default function Page() {
             <LoadingSpinner className="m-auto flex h-12 w-12" />
           )}
         </div>
-        <div className="flex w-full justify-between px-1.5 gap-x-6 pb-1 lg:hidden overflow-x-auto flex-shrink-0 scrollbar-hide">
+        <div className="scrollbar-hide flex w-full flex-shrink-0 justify-between gap-x-6 overflow-x-auto px-1.5 pb-1 lg:hidden">
           <AgentProfileList agentWorks={agentWorks} />
         </div>
 
@@ -178,7 +178,8 @@ export default function Page() {
             'h-full flex-col overflow-y-auto border-t border-[#E2E8F0] p-6',
             {
               hidden: mobileView !== 'Workflow',
-              'flex flex-grow lg:hidden lg:flex-auto': mobileView === 'Workflow',
+              'flex flex-grow lg:hidden lg:flex-auto':
+                mobileView === 'Workflow',
             },
           )}
         >
@@ -202,7 +203,7 @@ export default function Page() {
           )}
         >
           <ResultSection
-            markdownContent={''}
+            markdownContent={thread?.result ?? ''}
             resultCollapsed={resultCollapsed}
             setResultCollapsed={setResultCollapsed}
             onClickCopyButton={handleCopyAsMarkdown}
@@ -214,7 +215,7 @@ export default function Page() {
         <div className="relative flex w-full flex-grow items-end px-6 pb-6 lg:pb-[1.875rem]">
           <div
             className={classNames(
-              'absolute -top-20 lg:-top-16 left-1/2 -translate-x-1/2',
+              'absolute -top-20 left-1/2 -translate-x-1/2 lg:-top-16',
               {
                 hidden: isAtBottom,
                 'hidden lg:flex': !isAtBottom && mobileView !== 'Chat',
