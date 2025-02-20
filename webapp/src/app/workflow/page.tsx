@@ -86,8 +86,10 @@ export default function Page() {
   }, [addMessage, userMessage]);
 
   const handleCopyAsMarkdown = useCallback(() => {
-    navigator.clipboard.writeText('');
-  }, []);
+    if (!thread || !thread.allDone) return;
+
+    navigator.clipboard.writeText(thread.result);
+  }, [thread]);
 
   const scrollToBottom = useCallback(() => {
     if (!chatContainerRef.current) return;
