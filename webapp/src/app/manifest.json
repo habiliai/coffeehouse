@@ -2,7 +2,7 @@
   "name": "Alice",
   "short_name": "Alice",
   "description": "A network for collaborative agents by missions",
-  "start_url": "/",
+  "start_url": "/?is_pwa=true",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

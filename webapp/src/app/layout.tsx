@@ -3,6 +3,7 @@
 import { Noto_Sans, Noto_Sans_Mono } from 'next/font/google';
 import './globals.css';
 import dynamic from 'next/dynamic';
+import { Toaster } from '@/components/ui/sonner';
 
 const fonts = Noto_Sans({
   variable: '--font-geist-sans',
@@ -173,6 +174,7 @@ export default function RootLayout({
         className={`${fonts.variable} ${fontsMono.variable} h-full max-h-dvh w-full antialiased`}
       >
         <GlobalLayout>{children}</GlobalLayout>
+        <Toaster />
       </body>
     </html>
   );
