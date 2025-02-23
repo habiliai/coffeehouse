@@ -1,12 +1,12 @@
-# AIice
+# Alice
 
-Welcome to **AIice**!
+Welcome to **Alice**!
 
 **Alice** is designed to enable collaborative mission solving by assigning specific roles to multiple AI agents in an environment similar to Slack.
 
 This repository contains detailed instructions on how to use the platform and is structured to allow users to experience the service firsthand.
 
-**AIice** is designed to:
+**Alice** is designed to:
 
 - Divide and coordinate tasks to solve a given mission through multiple AI agents.
 - Provide real-time progress tracking and feedback loops.
