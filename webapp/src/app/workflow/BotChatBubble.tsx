@@ -1,7 +1,7 @@
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ProfileImage from '@/components/ProfileImage';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import {useMemo, useState} from 'react';
 import classNames from 'classnames';
 
 export default function BotChatBubble({
@@ -9,13 +9,18 @@ export default function BotChatBubble({
   text = '',
   profileImageUrl,
   working = false,
+  role,
 }: {
   botName: string;
   text?: string;
   profileImageUrl: string;
   working?: boolean;
+  role: string;
 }) {
   const [collapse, setCollapse] = useState(false);
+  const title = useMemo(() => {
+    return `${botName} - ${role}`;
+  }, [botName, role]);
 
   return (
     <div className="flex w-full flex-row items-start gap-4 bg-transparent">
@@ -28,7 +33,7 @@ export default function BotChatBubble({
       </div>
       <div className="flex w-full flex-col gap-y-1 pb-2">
         <div className="flex w-full items-center justify-between">
-          <span className="flex text-sm font-bold">{botName}</span>
+          <span className="flex text-sm font-bold">{title}</span>
           {!working && (
             <div className="flex flex-grow justify-end">
               <button

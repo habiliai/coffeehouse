@@ -48,18 +48,21 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				AssistantId:           "asst_aggf9nmtEM77Qy3niFq64uBK",
 				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_2-qjcaZG8UxoP6TLl8wVoCHBgldAs89J.png",
 				IncludeQuestionIntent: true,
+				Role:                  "Moderator",
 			}
 			moderator.Save(db)
 			suggester := domain.Agent{
 				Name:        "vincent",
 				AssistantId: "asst_YHXPoVMv8oD3kzBO2xO8jIxL",
 				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_3-FT5HiZTgMpE2Lspch6BsRi0OPO4IlP.png",
+				Role:        "Suggester",
 			}
 			suggester.Save(db)
 			scheduler := domain.Agent{
 				Name:        "john",
 				AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
 				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_4-2Nak14Txvun5JvkF573HieU0849Z9M.png",
+				Role:        "Scheduler",
 			}
 			scheduler.Save(db)
 
@@ -105,6 +108,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				Name:        "sunny",
 				AssistantId: "asst_Rho49KGmpl1IkiVWtfuNDd4i",
 				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_1-UDKR09vHK9lvc8X64QNBduP983CRH2.png",
+				Role:        "Weather forecaster",
 			}
 			sunny.Save(db)
 			eric := domain.Agent{
@@ -112,6 +116,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile2_fin-fgp1RqJ0pSckjx6voV6ZLa8JhXiwVQ.png",
 				IncludeQuestionIntent: true,
 				AssistantId:           "asst_e08WipDCbvGTOVlFxiMjPa10",
+				Role:                  "Community Organizer",
 			}
 			eric.Save(db)
 			julia := domain.Agent{
@@ -119,12 +124,14 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile1_fin-yJ5v3itdrTokAjXqUjTX6bT3DqVhgU.png",
 				AssistantId:           "asst_7B77ZJoBXpia1QB0E5G8yOnG",
 				IncludeQuestionIntent: true,
+				Role:                  "Location Manager",
 			}
 			julia.Save(db)
 			stella := domain.Agent{
 				Name:        "stella",
 				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile4_fin-IqdC8Bql3RRrF4mtHW6LdxVuCyygWH.png",
 				AssistantId: "asst_Duu1WXwmYwPokx3n3JYIVvRo",
+				Role:        "Ment Specialist",
 			}
 			stella.Save(db)
 			amelia := domain.Agent{
@@ -132,12 +139,14 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile5_fin-Rya4OZX7HYfLd8Xrq4wVjHoKEn6nf3.png",
 				AssistantId:           "asst_jLfJ39wLvYRKiy21Iirq6fIl",
 				IncludeQuestionIntent: true,
+				Role:                  "Event Scheduler",
 			}
 			amelia.Save(db)
 			nolan := domain.Agent{
 				Name:        "nolan",
 				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/ai_profile3_fin-prGwytGtS6ahk6iO9Xqy7ul272MAIv.png",
 				AssistantId: "asst_OjOnv01dbmaGMa200m9bkDpm",
+				Role:        "SNS Manager",
 			}
 			nolan.Save(db)
 

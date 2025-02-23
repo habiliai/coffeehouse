@@ -37,6 +37,7 @@ export default function ChatSection({
                       botName={agent?.name || ''}
                       text={text}
                       profileImageUrl={agent?.iconUrl || ''}
+                      role={agent?.role ?? ''}
                     />
                   );
               }
@@ -50,6 +51,7 @@ export default function ChatSection({
                 botName={agent.name}
                 profileImageUrl={agent.iconUrl}
                 working={true}
+                role={agent.role}
               />
             ))}
         </>
