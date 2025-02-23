@@ -43,67 +43,6 @@ func (c *cli) newSeedCmd() *cobra.Command {
 				}
 			}
 
-			moderator := domain.Agent{
-				Name:                  "edan",
-				AssistantId:           "asst_aggf9nmtEM77Qy3niFq64uBK",
-				IconUrl:               "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_2-qjcaZG8UxoP6TLl8wVoCHBgldAs89J.png",
-				IncludeQuestionIntent: true,
-				Role:                  "Moderator",
-			}
-			moderator.Save(db)
-			suggester := domain.Agent{
-				Name:        "vincent",
-				AssistantId: "asst_YHXPoVMv8oD3kzBO2xO8jIxL",
-				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_3-FT5HiZTgMpE2Lspch6BsRi0OPO4IlP.png",
-				Role:        "Suggester",
-			}
-			suggester.Save(db)
-			scheduler := domain.Agent{
-				Name:        "john",
-				AssistantId: "asst_NesAuSvy09nlv7gI3c2Bcx61",
-				IconUrl:     "https://u6mo491ntx4iwuoz.public.blob.vercel-storage.com/emoji_4-2Nak14Txvun5JvkF573HieU0849Z9M.png",
-				Role:        "Scheduler",
-			}
-			scheduler.Save(db)
-
-			mission := domain.Mission{
-				Name: "컨퍼런스 일정 중에 갈만한 것을 예약해줘",
-				Steps: []domain.Step{
-					{
-						SeqNo: 1,
-						Actions: []domain.Action{
-							{
-								Subject: "니즈 파악(추천 키워드 선택지 제안)",
-								Agent:   moderator,
-							},
-						},
-					},
-					{
-						SeqNo: 2,
-						Actions: []domain.Action{
-							{
-								Subject: "일정, 이벤트 추천",
-								Agent:   suggester,
-							},
-						},
-					},
-					{
-						SeqNo: 3,
-						Actions: []domain.Action{
-							{
-								Subject: "적절한 일정 찾아 신청",
-								Agent:   scheduler,
-							},
-						},
-					},
-				},
-			}
-
-			// TODO: Uncomment this block when the mission is ready
-			//if err := db.Create(&mission).Error; err != nil {
-			//	logger.Warn("failed to create mission", "err", err)
-			//}
-
 			sunny := domain.Agent{
 				Name:        "sunny",
 				AssistantId: "asst_Rho49KGmpl1IkiVWtfuNDd4i",
@@ -150,7 +89,7 @@ func (c *cli) newSeedCmd() *cobra.Command {
 			}
 			nolan.Save(db)
 
-			mission = domain.Mission{
+			mission := domain.Mission{
 				Name:           "Organize a community meal gathering near Hong Kong CEC this weekend.",
 				ResultTemplate: mission1ResultTemplate,
 				Steps: []domain.Step{
