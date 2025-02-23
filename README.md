@@ -38,3 +38,8 @@ This repository contains detailed instructions on how to use the platform and is
 
 ## License
 Alice is licensed under the MIT License. See [LICENSE](./LICENSE) for the full license text.
+
+## Contact (or QnA)
+- [Habili AI](https://habili.ai/)
+- [X/Twitter](https://twitter.com/habili_ai)
+- [Discord](https://discord.com/invite/yDxRqhfE7h)
