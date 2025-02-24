@@ -74,7 +74,13 @@ export default function Home() {
   }, [agentSlots, handleAgentSlotChange]);
 
   useEffect(() => {
-    promptInstall();
+    const timer = setTimeout(() => {
+      promptInstall();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [promptInstall]);
 
   return (
