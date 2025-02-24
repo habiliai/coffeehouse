@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/habiliai/habiliai/api/pkg/constants"
+	"github.com/habiliai/alice/api/pkg/constants"
 )
 
 type (

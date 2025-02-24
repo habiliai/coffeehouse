@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/habiliai/habiliai/api/pkg/cli/habapi"
+	"github.com/habiliai/alice/api/pkg/cli/habapi"
 	_ "go.uber.org/automaxprocs"
 	"os"
 )

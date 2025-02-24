@@ -1,9 +1,9 @@
 package habapi_test
 
 import (
-	"github.com/habiliai/habiliai/api/pkg/domain"
-	domaintest "github.com/habiliai/habiliai/api/pkg/domain/testing"
-	"github.com/habiliai/habiliai/api/pkg/habapi"
+	"github.com/habiliai/alice/api/pkg/domain"
+	domaintest "github.com/habiliai/alice/api/pkg/domain/testing"
+	"github.com/habiliai/alice/api/pkg/habapi"
 	"os"
 )
 

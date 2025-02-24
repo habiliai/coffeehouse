@@ -2,8 +2,8 @@ package habapi
 
 import (
 	"fmt"
-	"github.com/habiliai/habiliai/api/pkg/digo"
-	habgrpc "github.com/habiliai/habiliai/api/pkg/grpc"
+	"github.com/habiliai/alice/api/pkg/digo"
+	habgrpc "github.com/habiliai/alice/api/pkg/grpc"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"

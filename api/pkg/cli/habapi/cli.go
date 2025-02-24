@@ -2,8 +2,8 @@ package habapi
 
 import (
 	"context"
-	habconfig "github.com/habiliai/habiliai/api/pkg/config"
-	hablog "github.com/habiliai/habiliai/api/pkg/log"
+	habconfig "github.com/habiliai/alice/api/pkg/config"
+	hablog "github.com/habiliai/alice/api/pkg/log"
 )
 
 type cli struct {

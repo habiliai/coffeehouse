@@ -2,9 +2,9 @@ package habapi
 
 import (
 	_ "embed"
-	"github.com/habiliai/habiliai/api/pkg/digo"
-	"github.com/habiliai/habiliai/api/pkg/domain"
-	"github.com/habiliai/habiliai/api/pkg/services"
+	"github.com/habiliai/alice/api/pkg/digo"
+	"github.com/habiliai/alice/api/pkg/domain"
+	"github.com/habiliai/alice/api/pkg/services"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
 )

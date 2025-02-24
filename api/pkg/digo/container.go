@@ -2,8 +2,8 @@ package digo
 
 import (
 	"context"
-	"github.com/habiliai/habiliai/api/pkg/config"
-	aflog "github.com/habiliai/habiliai/api/pkg/log"
+	"github.com/habiliai/alice/api/pkg/config"
+	aflog "github.com/habiliai/alice/api/pkg/log"
 )
 
 type (

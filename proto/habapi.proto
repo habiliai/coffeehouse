@@ -1,7 +1,7 @@
 syntax = 'proto3';
 package afb;
 
-option go_package="github.com/habiliai/habiliai/api/pkg/habapi";
+option go_package="github.com/habiliai/alice/api/pkg/habapi";
 
 import "google/protobuf/empty.proto";
 

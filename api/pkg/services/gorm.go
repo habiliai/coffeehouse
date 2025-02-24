@@ -1,11 +1,11 @@
 package services
 
 import (
-	"github.com/habiliai/habiliai/api/pkg/constants"
-	"github.com/habiliai/habiliai/api/pkg/digo"
-	"github.com/habiliai/habiliai/api/pkg/domain"
-	aflog "github.com/habiliai/habiliai/api/pkg/log"
-	"github.com/habiliai/habiliai/api/pkg/util"
+	"github.com/habiliai/alice/api/pkg/constants"
+	"github.com/habiliai/alice/api/pkg/digo"
+	"github.com/habiliai/alice/api/pkg/domain"
+	aflog "github.com/habiliai/alice/api/pkg/log"
+	"github.com/habiliai/alice/api/pkg/util"
 	"github.com/pkg/errors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

@@ -1,7 +1,7 @@
 package config_test
 
 import (
-	"github.com/habiliai/habiliai/api/pkg/config"
+	"github.com/habiliai/alice/api/pkg/config"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"

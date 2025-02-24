@@ -1,7 +1,7 @@
 package domaintest
 
 import (
-	"github.com/habiliai/habiliai/api/pkg/domain"
+	"github.com/habiliai/alice/api/pkg/domain"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )

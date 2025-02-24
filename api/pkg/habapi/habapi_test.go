@@ -2,10 +2,10 @@ package habapi_test
 
 import (
 	"context"
-	"github.com/habiliai/habiliai/api/pkg/digo"
-	habgrpc "github.com/habiliai/habiliai/api/pkg/grpc"
-	"github.com/habiliai/habiliai/api/pkg/habapi"
-	"github.com/habiliai/habiliai/api/pkg/services"
+	"github.com/habiliai/alice/api/pkg/digo"
+	habgrpc "github.com/habiliai/alice/api/pkg/grpc"
+	"github.com/habiliai/alice/api/pkg/habapi"
+	"github.com/habiliai/alice/api/pkg/services"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/sync/errgroup"

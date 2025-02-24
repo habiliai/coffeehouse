@@ -1,8 +1,8 @@
 package habapi_test
 
 import (
-	domaintest "github.com/habiliai/habiliai/api/pkg/domain/testing"
-	"github.com/habiliai/habiliai/api/pkg/habapi"
+	domaintest "github.com/habiliai/alice/api/pkg/domain/testing"
+	"github.com/habiliai/alice/api/pkg/habapi"
 	"github.com/mokiat/gog"
 	"os"
 )

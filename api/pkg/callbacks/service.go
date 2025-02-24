@@ -2,9 +2,9 @@ package callbacks
 
 import (
 	"context"
-	"github.com/habiliai/habiliai/api/pkg/config"
-	"github.com/habiliai/habiliai/api/pkg/digo"
-	hablog "github.com/habiliai/habiliai/api/pkg/log"
+	"github.com/habiliai/alice/api/pkg/config"
+	"github.com/habiliai/alice/api/pkg/digo"
+	hablog "github.com/habiliai/alice/api/pkg/log"
 )
 
 type Service interface {

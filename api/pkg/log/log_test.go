@@ -1,7 +1,7 @@
 package hablog_test
 
 import (
-	aflog "github.com/habiliai/habiliai/api/pkg/log"
+	aflog "github.com/habiliai/alice/api/pkg/log"
 	"github.com/pkg/errors"
 	"testing"
 )

@@ -9,7 +9,7 @@ PROTOC_DIR := bin/protoc-$(GOOS)-$(GOARCH)
 PROTOC := bin/protoc
 
 .PHONY: all
-all: bin/habapi
+all: bin/alice
 
 bin/protoc-linux-amd64.zip:
 	wget -O $@ "https://github.com/protocolbuffers/protobuf/releases/download/v27.1/protoc-27.1-linux-x86_64.zip"
@@ -62,9 +62,9 @@ clean:
 	rm -f $(PROTOC)
 	@echo "cleared"
 
-bin/habapi: pb
-	CGO_ENABLED=0 go build -o bin/habapi ./cmd/habapi/main.go
+bin/alice: pb
+	CGO_ENABLED=0 go build -o $@ ./cmd/alice/main.go
 
 .PHONY: seed
-seed: bin/habapi
-	bin/habapi seed --reset
+seed: bin/alice
+	bin/alice seed --reset

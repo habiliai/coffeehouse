@@ -2,8 +2,8 @@ package callbacks_test
 
 import (
 	"context"
-	"github.com/habiliai/habiliai/api/pkg/callbacks"
-	habconfig "github.com/habiliai/habiliai/api/pkg/config"
+	"github.com/habiliai/alice/api/pkg/callbacks"
+	habconfig "github.com/habiliai/alice/api/pkg/config"
 	"github.com/stretchr/testify/require"
 	"testing"
 )

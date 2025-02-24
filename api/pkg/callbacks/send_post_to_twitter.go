@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dghubble/oauth1"
-	habconfig "github.com/habiliai/habiliai/api/pkg/config"
+	habconfig "github.com/habiliai/alice/api/pkg/config"
 	"github.com/pkg/errors"
 	"io"
 	"net/http"

@@ -2,9 +2,9 @@ package callbacks
 
 import (
 	"context"
-	"github.com/habiliai/habiliai/api/pkg/config"
-	"github.com/habiliai/habiliai/api/pkg/domain"
-	"github.com/habiliai/habiliai/api/pkg/helpers"
+	"github.com/habiliai/alice/api/pkg/config"
+	"github.com/habiliai/alice/api/pkg/domain"
+	"github.com/habiliai/alice/api/pkg/helpers"
 	"gorm.io/datatypes"
 )
 
