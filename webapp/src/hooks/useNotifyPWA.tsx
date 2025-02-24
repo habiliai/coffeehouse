@@ -43,6 +43,10 @@ export const useNotifyPWA = () => {
 
     if (deferredPrompt) {
       toast('Install app', {
+        actionButtonStyle: {
+          color: '#FAFAFA',
+          backgroundColor: '#171717',
+        },
         description: (
           <span className="text-black">
             To get back here quickly, install Alice
@@ -58,9 +62,13 @@ export const useNotifyPWA = () => {
       });
     } else if (
       isIos ||
-      (isSafari && window.navigator.platform.includes('Mac'))
+      (isSafari && window.navigator.userAgent.includes('Mac'))
     ) {
       toast('Install app', {
+        actionButtonStyle: {
+          color: '#FAFAFA',
+          backgroundColor: '#171717',
+        },
         description: (
           <div className="flex flex-col text-black">
             <span>To get back here quickly,</span>
