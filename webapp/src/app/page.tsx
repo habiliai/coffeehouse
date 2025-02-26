@@ -9,12 +9,14 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Agent, Mission } from '@/proto/habapi';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useNotifyPWA } from '@/hooks/useNotifyPWA';
 
 const DEFAULT_AGENT_SLOT = Array(3).fill(null);
 export default function Home() {
   const router = useRouter();
   const { data: missions, isLoading: isMissionsLoading } = useGetMissions();
   const { data: agents, isLoading: isAgentsLoading } = useGetAgents();
+  const { promptInstall } = useNotifyPWA();
 
   const { mutate: createThread } = useCreateThread({
     onSuccess: (threadId) => {
@@ -70,6 +72,16 @@ export default function Home() {
     if (!agentSlots.every((slot) => slot === null)) return;
     handleAgentSlotChange();
   }, [agentSlots, handleAgentSlotChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      promptInstall();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [promptInstall]);
 
   return (
     <LayoutGroup>
