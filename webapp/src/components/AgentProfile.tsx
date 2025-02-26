@@ -27,14 +27,16 @@ function AgentProfile({
   });
 
   return (
-    <div className="group relative flex flex-col items-center gap-y-2 justify-start">
+    <div className="group relative flex flex-col items-center justify-start gap-y-2">
       <div className="relative flex">
         <div
           className={classNames(
             'min-h-6 min-w-6 rounded-full ' + imageClassName,
             {
               'border border-[#CBD5E1]': status === AgentWork.Status.IDLE,
-              'border border-[#4AD15B]': status === AgentWork.Status.WAITING || status === AgentWork.Status.WORKING,
+              'border border-[#4AD15B]':
+                status === AgentWork.Status.WAITING ||
+                status === AgentWork.Status.WORKING,
             },
           )}
         >

@@ -1,7 +1,7 @@
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ProfileImage from '@/components/ProfileImage';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import {useMemo, useState} from 'react';
+import { useMemo, useState } from 'react';
 import classNames from 'classnames';
 
 export default function BotChatBubble({

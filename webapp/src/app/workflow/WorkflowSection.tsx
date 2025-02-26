@@ -42,7 +42,7 @@ export default function WorkflowSection({
                 <div
                   key={`workflow-task-${index}`}
                   className={classNames(
-                    'flex w-full items-center justify-between rounded-[0.625rem] border py-[0.3125rem] px-3 xl:px-[1.875rem]',
+                    'flex w-full items-center justify-between rounded-[0.625rem] border px-3 py-[0.3125rem] xl:px-[1.875rem]',
                     {
                       'border-[#CBD5E1]': done,
                       'border-[#4AD15B]': !done,
