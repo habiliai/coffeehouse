@@ -26,6 +26,8 @@
     "generate:api": "yarn workspace @habiliai/api generate",
     "generate": "run-s generate:*",
     "lint:webapp": "yarn workspace @habiliai/webapp lint",
-    "lint": "run-s lint:*"
+    "lint": "run-s lint:*",
+    "format:webapp": "yarn workspace @habiliai/webapp format",
+    "format": "run-s format:*"
   }
 }
