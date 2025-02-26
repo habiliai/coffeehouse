@@ -77,7 +77,7 @@ export default function Page() {
         text: message,
         mentionsList: [],
       });
-      setTimeout(scrollToBottom, 200);
+      // setTimeout(scrollToBottom, 200);
     },
   });
 
@@ -164,7 +164,7 @@ export default function Page() {
         <div
           ref={chatContainerRef}
           className={classNames(
-            'relative h-full flex-col overflow-y-auto border-t border-[#E2E8F0] px-4 py-4',
+            'relative h-full flex-col overflow-y-auto border-t border-[#E2E8F0] px-4 py-4 scrollbar-hide',
             {
               'flex flex-grow': mobileView === 'Chat',
               'hidden lg:flex': mobileView !== 'Chat',
@@ -173,6 +173,27 @@ export default function Page() {
         >
           <ChatSection thread={thread} agentWorks={agentWorks} />
           <div ref={observerRef} className="h-0.5" />
+          <div className="block">
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+          </div>
         </div>
 
         <div
@@ -224,12 +245,12 @@ export default function Page() {
               },
             )}
           >
-            <button
-              onClick={scrollToBottom}
-              className="flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-10"
-            >
-              <ChevronDown className="size-4 lg:size-6" />
-            </button>
+            {/*<button*/}
+            {/*  onClick={scrollToBottom}*/}
+            {/*  className="flex size-7 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-gray-500 lg:size-10"*/}
+            {/*>*/}
+            {/*  <ChevronDown className="size-4 lg:size-6" />*/}
+            {/*</button>*/}
           </div>
           <UserMessageInput
             loading={isRunning || !thread}
