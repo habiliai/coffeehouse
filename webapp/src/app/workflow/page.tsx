@@ -12,7 +12,7 @@ import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import UserMessageInput from './UserMessageInput';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { Agent, AgentWork } from '@/proto/habapi';
+import { Agent, AgentWork } from '@/proto/aliceapi';
 import classNames from 'classnames';
 import ResultSection from './ResultSection';
 import WorkflowSection from './WorkflowSection';
@@ -29,7 +29,8 @@ export default function Page() {
   }, [searchParams]);
 
   const {
-    data: { thread, mission, lastMessageId },
+    data: { thread, mission, lastMessageId, actionWorks },
+    isLoading: isLoadingThread
   } = useGetThread({ threadId });
 
   const {
@@ -51,13 +52,6 @@ export default function Page() {
   const observerRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
 
-  const {
-    data: { initialLoading: isActionWorksLoading, actionWorks },
-  } = useGetMissionStepStatus({
-    threadId,
-    selectedSeqNo: nowDisplayedStep,
-  });
-
   const { mutate: addMessage } = useAddMessage({
     threadId,
     onSuccess: () => {
@@ -72,10 +66,9 @@ export default function Page() {
       setMobileView('Chat');
 
       thread?.messagesList.push({
-        id: Date.now().toString(),
-        role: 1,
+        id: 0,
+        user: "USER",
         text: message,
-        mentionsList: [],
       });
       setTimeout(scrollToBottom, 200);
     },
@@ -186,7 +179,7 @@ export default function Page() {
           )}
         >
           <WorkflowSection
-            loading={isActionWorksLoading}
+            loading={isLoadingThread}
             stepsList={mission?.stepsList ?? []}
             actionWorks={actionWorks}
             currentStepSeqNo={thread?.currentStepSeqNo ?? 0}
@@ -243,7 +236,7 @@ export default function Page() {
       <div className="hidden h-screen w-full max-w-[calc(100%-8.125rem-30.25rem)] flex-col items-center gap-[0.875rem] pb-[0.875rem] pt-[0.875rem] lg:flex">
         <div className="flex max-h-[60%] w-full flex-col overflow-y-auto rounded-[1.25rem] border border-[#E5E7EB] bg-white px-[2.875rem] pb-[2.875rem] pt-8 shadow-card">
           <WorkflowSection
-            loading={isActionWorksLoading}
+            loading={isLoadingThread}
             stepsList={mission?.stepsList ?? []}
             actionWorks={actionWorks}
             currentStepSeqNo={thread?.currentStepSeqNo ?? 0}

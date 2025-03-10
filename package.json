@@ -28,6 +28,7 @@
     "lint:webapp": "yarn workspace @habiliai/webapp lint",
     "lint": "run-s lint:*",
     "format:webapp": "yarn workspace @habiliai/webapp format",
-    "format": "run-s format:*"
+    "format": "run-s format:*",
+    "seed": "yarn workspace @habiliai/api seed"
   }
 }

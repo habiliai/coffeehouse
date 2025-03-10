@@ -10,16 +10,16 @@ if (!fs.existsSync('./src/proto/generated')) {
 // file name change for using .cjs instead of .js
 function changeFileName() {
   {
-    const file = './src/proto/generated/habapi_pb.js';
-    const newFile = './src/proto/generated/habapi_pb.cjs';
+    const file = './src/proto/generated/aliceapi_pb.js';
+    const newFile = './src/proto/generated/aliceapi_pb.cjs';
     if (fs.existsSync(newFile)) {
       fs.unlinkSync(newFile);
     }
     fs.renameSync(file, newFile);
   }
   {
-    const file = './src/proto/generated/habapi_pb.d.ts';
-    const newFile = './src/proto/generated/habapi_pb.d.cts';
+    const file = './src/proto/generated/aliceapi_pb.d.ts';
+    const newFile = './src/proto/generated/aliceapi_pb.d.cts';
     if (fs.existsSync(newFile)) {
       fs.unlinkSync(newFile);
     }
@@ -30,20 +30,20 @@ function changeFileName() {
 // change import path for using .cjs instead of .js
 function changeImportPath() {
   {
-    const file = './src/proto/generated/HabapiServiceClientPb.ts';
+    const file = './src/proto/generated/AliceapiServiceClientPb.ts';
     const fileContent = fs.readFileSync(file, 'utf-8');
     const newFileContent = fileContent.replace(
-      /from '.\/habapi_pb';/g,
-      "from './habapi_pb.cjs';",
+      /from '.\/aliceapi_pb';/g,
+      "from './aliceapi_pb.cjs';",
     );
     fs.writeFileSync(file, newFileContent);
   }
   {
-    const file = './src/proto/generated/habapi_pb.cjs';
+    const file = './src/proto/generated/aliceapi_pb.cjs';
     const fileContent = fs.readFileSync(file, 'utf-8');
     const newFileContent = fileContent.replace(
-      /require\('.\/habapi_pb.js'\);/g,
-      "require('./habapi_pb.cjs');",
+      /require\('.\/aliceapi_pb.js'\);/g,
+      "require('./aliceapi_pb.cjs');",
     );
     fs.writeFileSync(file, newFileContent);
   }

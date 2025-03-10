@@ -4,7 +4,7 @@ export default function UserChatBubble({
   text,
   id,
 }: {
-  id: string;
+  id: number;
   text: string;
 }) {
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { HabiliApiClientProvider } from '@/hooks/habapi';
+import { AliceApiClientProvider } from '@/hooks/aliceapi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -23,7 +23,7 @@ export function GlobalLayout({
   return (
     <div className="flex h-full w-full flex-1">
       <QueryClientProvider client={queryClient}>
-        <HabiliApiClientProvider>{children}</HabiliApiClientProvider>
+        <AliceApiClientProvider>{children}</AliceApiClientProvider>
       </QueryClientProvider>
     </div>
   );

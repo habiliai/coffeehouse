@@ -1,38 +1,39 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useHabiliApiClient } from '@/hooks/habapi';
+import { useAliceApiClient } from '@/hooks/aliceapi';
 import {
   AddMessageRequest,
   GetMissionStepStatusRequest,
   GetThreadStatusRequest,
   MissionId,
   ThreadId,
-} from '@/proto/habapi';
+} from '@/proto/aliceapi';
 
 export function useGetThread({ threadId }: { threadId: number | null }) {
-  const habapi = useHabiliApiClient();
+  const aliceapi = useAliceApiClient();
   return useQuery({
     refetchOnWindowFocus: true,
     enabled: !!threadId,
-    queryKey: ['server.getThread', { threadId, habapi }] as const,
+    queryKey: ['server.getThread', { threadId, aliceapi }] as const,
     initialData: {
       thread: null,
       mission: null,
-      lastMessageId: '',
+      lastMessageId: 0,
+      actionWorks: [],
     },
-    queryFn: async ({ queryKey: [{}, { threadId, habapi }] }) => {
+    queryFn: async ({ queryKey: [{}, { threadId, aliceapi }] }) => {
       try {
         if (!threadId) {
-          return { thread: null, mission: null, lastMessageId: '' };
+          return { thread: null, mission: null, lastMessageId: 0, actionWorks: [] };
         }
 
-        const thread = await habapi
+        const thread = await aliceapi
           .getThread(new ThreadId().setId(threadId))
           .then((r) => r.toObject())
           .then((r) => {
             return { status: 'done', ...r };
           });
 
-        const mission = await habapi
+        const mission = await aliceapi
           .getMission(new MissionId().setId(thread.missionId))
           .then((r) => r.toObject());
 
@@ -42,6 +43,7 @@ export function useGetThread({ threadId }: { threadId: number | null }) {
           thread,
           mission,
           lastMessageId,
+          actionWorks: thread.actionWorksList,
         };
       } catch (e) {
         console.error(e);
@@ -63,14 +65,14 @@ export function useAddMessage({
   onMutate?: (message: string) => void;
 }) {
   const queryClient = useQueryClient();
-  const habapi = useHabiliApiClient();
+  const aliceapi = useAliceApiClient();
   return useMutation({
     mutationKey: ['server.addMessage', { threadId }] as const,
     mutationFn: async ({ message }: { message: string }) => {
       if (!threadId) {
         throw new Error('Thread not found');
       }
-      await habapi.addMessage(
+      await aliceapi.addMessage(
         new AddMessageRequest().setThreadId(threadId).setMessage(message),
       );
       return null;
@@ -96,27 +98,27 @@ export function useGetStatus({
   lastMessageId,
 }: {
   threadId: number | null;
-  lastMessageId: string;
+  lastMessageId: number;
 }) {
-  const habapi = useHabiliApiClient();
+  const aliceapi = useAliceApiClient();
   const queryClient = useQueryClient();
   return useQuery({
     refetchInterval: 1000,
     refetchIntervalInBackground: true,
     enabled: !!threadId,
-    queryKey: ['server.getAgentsStatus', { habapi }] as const,
+    queryKey: ['server.getAgentsStatus', { aliceapi }] as const,
     initialData: {
       agentWorks: [],
       hasNewMessage: false,
     },
-    queryFn: async ({ queryKey: [{}, { habapi }] }) => {
+    queryFn: async ({ queryKey: [{}, { aliceapi }] }) => {
       try {
         if (!threadId) {
           throw new Error('Thread not found');
         }
 
         const [agentWorks, hasNewMessage] = await Promise.all([
-          habapi.getAgentsStatus(new ThreadId().setId(threadId)).then((r) => {
+          aliceapi.getAgentsStatus(new ThreadId().setId(threadId)).then((r) => {
             const { worksList: works } = r.toObject();
             const res = works.map((w) => {
               if (!w.agent) {
@@ -131,11 +133,11 @@ export function useGetStatus({
 
             return res;
           }),
-          habapi
+          aliceapi
             .getThreadStatus(
               new GetThreadStatusRequest()
                 .setThreadId(threadId)
-                .setLastMessageId(lastMessageId),
+                .setLastMessageId(lastMessageId)
             )
             .then(async (r) => {
               const { hasNewMessage } = r.toObject();
@@ -167,21 +169,21 @@ export function useGetMissionStepStatus({
   threadId: number | null;
   selectedSeqNo: number | null;
 }) {
-  const habapi = useHabiliApiClient();
+  const aliceapi = useAliceApiClient();
   return useQuery({
     refetchInterval: 1000,
     refetchIntervalInBackground: true,
     enabled: !!threadId && !!selectedSeqNo,
     queryKey: [
       'server.getMissionStepStatus',
-      { threadId, selectedSeqNo, habapi },
+      { threadId, selectedSeqNo, aliceapi },
     ] as const,
     initialData: {
       initialLoading: true,
       actionWorks: [],
     },
     queryFn: async ({
-      queryKey: [{}, { threadId, selectedSeqNo, habapi }],
+      queryKey: [{}, { threadId, selectedSeqNo, aliceapi }],
     }) => {
       try {
         if (!threadId || !selectedSeqNo) {
@@ -191,7 +193,7 @@ export function useGetMissionStepStatus({
           };
         }
 
-        const works = await habapi
+        const works = await aliceapi
           .getMissionStepStatus(
             new GetMissionStepStatusRequest()
               .setThreadId(threadId)

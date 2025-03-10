@@ -1,10 +1,7 @@
 SHELL := $(shell which sh)
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
-AF_PB_DIR := ./pkg/habapi
-AF_PB_FILES := $(AF_PB_DIR)/habapi.pb.go
-PROTO_DIR := ../proto
-AF_PROTO_FILES := $(PROTO_DIR)/habapi.proto
+GOPATH := $(shell go env GOPATH)
 PROTOC_DIR := bin/protoc-$(GOOS)-$(GOARCH)
 PROTOC := bin/protoc
 
@@ -32,14 +29,23 @@ $(PROTOC): $(PROTOC_DIR)
 	ln -sf protoc-$(GOOS)-$(GOARCH)/bin/protoc $(PROTOC)
 	touch $(PROTOC)
 
-$(AF_PB_FILES): $(AF_PROTO_FILES) $(PROTOC)
-	$(eval PROTOC_ABS := $(abspath $(PROTOC)))
+PROTOC_GEN_GO := $(GOPATH)/bin/protoc-gen-go
+$(PROTOC_GEN_GO):
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.4
-	@export PATH="$(shell go env GOPATH)/bin:$(PATH)"
-	$(PROTOC_ABS) --go_out=$(AF_PB_DIR) --go_opt=paths=source_relative --go-grpc_out=$(AF_PB_DIR) --go-grpc_opt=paths=source_relative -I$(PROTO_DIR) $(AF_PROTO_FILES)
 
-pb: $(AF_PB_FILES)
+PROTOC_GEN_GO_GRPC := $(GOPATH)/bin/protoc-gen-go-grpc
+$(PROTOC_GEN_GO_GRPC):
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.4
+
+%.pb.go: %.proto $(PROTOC) $(PROTOC_GEN_GO)
+	@export PATH="$(shell go env GOPATH)/bin:$(PATH)"
+	$(PROTOC) --go_out=. --go_opt=paths=source_relative -I. $<
+
+%_grpc.pb.go: %.proto $(PROTOC) $(PROTOC_GEN_GO) $(PROTOC_GEN_GO_GRPC)
+	@export PATH="$(shell go env GOPATH)/bin:$(PATH)"
+	$(PROTOC) --go-grpc_out=. --go-grpc_opt=paths=source_relative -I. $<
+
+pb: aliceapi/aliceapi_grpc.pb.go aliceapi/aliceapi.pb.go
 
 ./bin/golangci-lint:
 	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.62.2
@@ -52,7 +58,7 @@ lint: ./bin/golangci-lint $(PB_FILES)
 
 .PHONY: test
 test: pb
-	CI=true go test -timeout 15m -p 1 ./...
+	PROJECT_DIR=$(shell pwd) CI=true go test -timeout 15m -p 1 ./...
 
 .PHONY: clean
 clean:
@@ -62,8 +68,9 @@ clean:
 	rm -f $(PROTOC)
 	@echo "cleared"
 
+.PHONY: bin/alice
 bin/alice: pb
-	CGO_ENABLED=0 go build -o $@ ./cmd/alice/main.go
+	CGO_ENABLED=0 go build -o $@ ./cmd/alice
 
 .PHONY: seed
 seed: bin/alice

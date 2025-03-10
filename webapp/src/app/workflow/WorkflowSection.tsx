@@ -1,6 +1,6 @@
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ProfileImage from '@/components/ProfileImage';
-import { ActionWork, Step } from '@/proto/habapi';
+import { ActionWork, Step } from '@/proto/aliceapi';
 import classNames from 'classnames';
 import { Circle, CircleCheck } from 'lucide-react';
 

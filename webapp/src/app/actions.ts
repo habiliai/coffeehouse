@@ -1,13 +1,13 @@
-import { useHabiliApiClient } from '@/hooks/habapi';
-import { CreateThreadRequest } from '@/proto/habapi';
+import { useAliceApiClient } from '@/hooks/aliceapi';
+import { CreateThreadRequest } from '@/proto/aliceapi';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 
 export function useGetMissions() {
-  const client = useHabiliApiClient();
+  const client = useAliceApiClient();
 
   return useQuery({
-    queryKey: ['habapi.getMissions'] as const,
+    queryKey: ['aliceapi.getMissions'] as const,
     initialData: [],
     queryFn: async () => {
       try {
@@ -25,10 +25,10 @@ export function useGetMissions() {
 }
 
 export function useGetAgents() {
-  const client = useHabiliApiClient();
+  const client = useAliceApiClient();
 
   return useQuery({
-    queryKey: ['habapi.getAgents'] as const,
+    queryKey: ['aliceapi.getAgents'] as const,
     initialData: [],
     queryFn: async () => {
       try {
@@ -52,10 +52,10 @@ export function useCreateThread({
   onSuccess?: (threadId: number) => void;
   onError?: () => void;
 } = {}) {
-  const client = useHabiliApiClient();
+  const client = useAliceApiClient();
 
   return useMutation({
-    mutationKey: ['habapi.createThread'] as const,
+    mutationKey: ['aliceapi.createThread'] as const,
     async mutationFn({ missionId }: { missionId: number }) {
       const { id: threadId } = await client
         .createThread(new CreateThreadRequest().setMissionId(missionId))

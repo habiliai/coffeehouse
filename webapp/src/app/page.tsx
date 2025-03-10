@@ -7,7 +7,7 @@ import AgentProfile from '@/components/AgentProfile';
 import { VerticalCarousel } from '@/components/VerticalCarousel';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Agent, Mission } from '@/proto/habapi';
+import { Agent, Mission } from '@/proto/aliceapi';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useNotifyPWA } from '@/hooks/useNotifyPWA';
 
@@ -44,7 +44,8 @@ export default function Home() {
 
     const matchedAgents = selectedMission.agentIdsList.map(
       (agentId) => agents.find((agent) => agent.id === agentId) ?? null,
-    );
+    ).filter(t => t !== null);
+
     setAgentSlots(matchedAgents);
   }, [agents, selectedMission]);
 

@@ -3,7 +3,7 @@
 import { Children, isValidElement, PropsWithChildren } from 'react';
 import ProfileImage from './ProfileImage';
 import classNames from 'classnames';
-import { AgentWork } from '@/proto/habapi';
+import { AgentWork } from '@/proto/aliceapi';
 
 function AgentProfile({
   imageClassName,

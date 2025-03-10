@@ -1,7 +1,7 @@
 import LoadingSpinner from '@/components/LoadingSpinner';
 import UserChatBubble from './UserChatBubble';
 import BotChatBubble from './BotChatBubble';
-import { Agent, AgentWork, Thread } from '@/proto/habapi';
+import { Agent, AgentWork, Thread } from '@/proto/aliceapi';
 
 export default function ChatSection({
   thread,
@@ -19,9 +19,9 @@ export default function ChatSection({
         <LoadingSpinner className="m-auto flex h-12 w-12" />
       ) : (
         <>
-          {thread.messagesList.map(({ id, role, text, agent }) => {
-            switch (role) {
-              case 1:
+          {thread.messagesList.map(({ id, user, text, agent }) => {
+            switch (user) {
+              case "USER":
                 return (
                   <UserChatBubble
                     id={id}
@@ -29,7 +29,7 @@ export default function ChatSection({
                     text={text}
                   />
                 );
-              case 2:
+              default:
                 return (
                   <BotChatBubble
                     key={`thread-bot-${id}`}
