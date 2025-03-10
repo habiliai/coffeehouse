@@ -128,14 +128,14 @@ export default function Page() {
 
   return (
     <div className="flex w-full flex-col gap-[0.875rem] bg-[#F7F7F7] lg:flex-row lg:pr-[0.875rem]">
-      <div className="shadow-view hidden flex-col items-center gap-2 gap-y-7 border border-[#E5E7EB] bg-white px-4 py-9 lg:flex">
+      <div className="hidden flex-col items-center gap-2 gap-y-7 border border-[#E5E7EB] bg-white px-4 py-9 shadow-view lg:flex">
         <button onClick={() => router.back()}>
           <ChevronLeft />
         </button>
         <div>
           <span className="text-sm font-bold">Agents</span>
         </div>
-        <div className="scrollbar-hide flex flex-grow flex-col gap-y-2 overflow-y-auto p-0.5">
+        <div className="flex flex-grow flex-col gap-y-2 overflow-y-auto p-0.5 scrollbar-hide">
           <AgentProfileList agentWorks={agentWorks} />
         </div>
       </div>
@@ -157,7 +157,7 @@ export default function Page() {
             <LoadingSpinner className="m-auto flex h-12 w-12" />
           )}
         </div>
-        <div className="scrollbar-hide flex w-full flex-shrink-0 justify-between gap-x-6 overflow-x-auto px-1.5 pb-1 lg:hidden">
+        <div className="flex w-full flex-shrink-0 justify-between gap-x-6 overflow-x-auto px-1.5 pb-1 scrollbar-hide lg:hidden">
           <AgentProfileList agentWorks={agentWorks} />
         </div>
 
@@ -241,7 +241,7 @@ export default function Page() {
       </div>
 
       <div className="hidden h-screen w-full max-w-[calc(100%-8.125rem-30.25rem)] flex-col items-center gap-[0.875rem] pb-[0.875rem] pt-[0.875rem] lg:flex">
-        <div className="shadow-card flex max-h-[60%] w-full flex-col overflow-y-auto rounded-[1.25rem] border border-[#E5E7EB] bg-white px-[2.875rem] pb-[2.875rem] pt-8">
+        <div className="flex max-h-[60%] w-full flex-col overflow-y-auto rounded-[1.25rem] border border-[#E5E7EB] bg-white px-[2.875rem] pb-[2.875rem] pt-8 shadow-card">
           <WorkflowSection
             loading={isActionWorksLoading}
             stepsList={mission?.stepsList ?? []}
@@ -253,7 +253,7 @@ export default function Page() {
         </div>
         <div
           className={classNames(
-            'shadow-card flex w-full flex-1 rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4',
+            'flex w-full flex-1 rounded-[1.25rem] border border-[#E5E7EB] bg-white p-4 shadow-card',
             {
               'lg:overflow-hidden': resultCollapsed,
             },

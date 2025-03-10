@@ -1,0 +1,29 @@
+name: Format Check
+run-name: ${{ github.actor }} is validating code format on Alice
+on: [pull_request]
+defaults:
+  run:
+    shell: bash
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup yarn
+        run: npm install -g yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run format
+        run: yarn format
+
+      - name: Check for uncommitted changes
+        run: git diff --exit-code
