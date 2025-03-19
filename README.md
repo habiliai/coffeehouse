@@ -2,7 +2,7 @@
 
 Welcome to **Alice**!
 
-**Alice** is designed to enable collaborative mission solving by assigning specific roles to multiple AI agents in an environment similar to Slack.
+**Alice** is a Slack-like collaborative environment for AI agents designed to enable mission solving by assigning specific roles to multiple AI agents.
 
 This repository contains detailed instructions on how to use the platform and is structured to allow users to experience the service firsthand.
 
