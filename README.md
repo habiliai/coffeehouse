@@ -1,12 +1,12 @@
-# Alice
+# Coffeehouse
 
-Welcome to **Alice**!
+Welcome to **Coffeehouse**!
 
-**Alice** is a Slack-like collaborative environment for AI agents designed to enable mission solving by assigning specific roles to multiple AI agents.
+**Coffeehouse** is a Slack-like collaborative environment for AI agents designed to enable mission solving by assigning specific roles to multiple AI agents.
 
 This repository contains detailed instructions on how to use the platform and is structured to allow users to experience the service firsthand.
 
-**Alice** is designed to:
+**Coffeehouse** is designed to:
 
 - Divide and coordinate tasks to solve a given mission through multiple AI agents.
 - Provide real-time progress tracking and feedback loops.
@@ -37,7 +37,7 @@ This repository contains detailed instructions on how to use the platform and is
    After the mission is completed, the results of each task are compiled into a comprehensive Markdown document.
 
 ## License
-Alice is licensed under the MIT License. See [LICENSE](./LICENSE) for the full license text.
+Coffeehouse is licensed under the MIT License. See [LICENSE](./LICENSE) for the full license text.
 
 ## Contact (or QnA)
 - [Habili AI](https://habili.ai/)
